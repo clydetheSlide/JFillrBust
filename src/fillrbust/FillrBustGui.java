@@ -183,7 +183,7 @@ class FillrBustGui extends JFrame{
     ArrayList<JToggleButton> dice;
     JLabel running, potential;
     JButton optionA, optionB, card;
-    JMenuItem quit,rc,save,addPlayer,target,load;
+    JMenuItem quit,rc,addPlayer,target;  //save,load;
     JMenuItem rules, synopsis, specific, about;
 
     FillRBustGame.STATES gameSTATE = FillRBustGame.STATES.INIT;
@@ -314,12 +314,12 @@ class FillrBustGui extends JFrame{
 		ypos+=imi.getIconHeight();
 	    diceP=new DicePanel(config.diceDir);
 	    imi =new ImageIcon(getClass().getResource(config.diceDir+"one.gif"));
-	    diceP.setBounds(0,ypos,frameDims[1].width,imi.getIconHeight());  // TODO geom based on image size
+	    diceP.setBounds(0,ypos,frameDims[1].width,imi.getIconHeight());
 	    ypos+=imi.getIconHeight();
 	    diceP.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		diceP.setToolTipText("<html><p width=\"180\">"+diceHelp+"</html>");
 	    scores = new JPanel(new FlowLayout(FlowLayout.CENTER,20,2));
-	    scores.setBounds(100,ypos,300,25);  // TODO geom based on previous geom
+	    scores.setBounds(100,ypos,300,25);
 		ypos+=30;
 	    scores.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 	    scores.setBackground(Color.BLACK);
