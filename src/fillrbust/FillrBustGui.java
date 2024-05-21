@@ -120,7 +120,7 @@ class FillrBustGui extends JFrame{
 "Subsequent to the first roll, clicking will select and de-select the individual dice to be reserved for scoring. "+
 "Selected dice are shown red and will not be rolled. "+
 "Of the rolled dice, at least one must be reserved for scoring (it's a rule). "+
-"Dice that were reserved and not rolled are displayed with a yellow border and grouped to the right.";
+"Dice that were reserved and not rolled are displayed on the right side of the fence.";
 
     String cardHelp="             Card:\n"+
 "The cards are displayed and modeled as a shuffled Fill'RBust deck. "+
@@ -197,7 +197,7 @@ class FillrBustGui extends JFrame{
 		winningScore = new JButton(String.format("%d",targetScore));
 		users = new JPanel();
 		users.setLayout(new BoxLayout(users,BoxLayout.X_AXIS));
-		players = new ArrayList<UserPanel>();
+		players = new ArrayList<>();
 		for (String each: playerNames){
 			UserPanel entry = new UserPanel(each);
 			players.add(entry);
@@ -265,8 +265,12 @@ class FillrBustGui extends JFrame{
 	     game.add(target); game.add(addPlayer);                 //  |                                      |
 		 //game.add(save);                                      //  |______________________________________|
 	     //game.add(load);
+	    target.setToolTipText("<html><p width=\"180\">"+goalHelp+"</html>");
+		addPlayer.setToolTipText("<html><p width=\"180\">"+playerHelp+"</html>");
+		quit.setToolTipText("<html><p width=\"180\">"+quitHelp+"</html>");
 		 game.add(rc); game.add(quit);
 	   help = new JMenu("Help");
+	   help.setToolTipText("<html><p width=\"180\">"+helpHelp+"</html>");
 	   rules = new JMenuItem("Rules");
 	   synopsis = new JMenuItem("Synopsis");
 	   specific = new JMenuItem("specific");
@@ -306,14 +310,14 @@ class FillrBustGui extends JFrame{
 	      ImageIcon imi =new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
           card = new JButton(new ImageIcon(getClass().getResource(cardFolder+"title.gif")));
 	    card.setBounds(200,ypos, imi.getIconWidth(), imi.getIconHeight());  // TODO geom based on image size
-		card.setToolTipText(cardHelp);
+		card.setToolTipText("<html><p width=\"180\">"+cardHelp+"</html>");
 		ypos+=imi.getIconHeight();
 	    diceP=new DicePanel(config.diceDir);
 	    imi =new ImageIcon(getClass().getResource(config.diceDir+"one.gif"));
 	    diceP.setBounds(0,ypos,frameDims[1].width,imi.getIconHeight());  // TODO geom based on image size
 	    ypos+=imi.getIconHeight();
 	    diceP.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		diceP.setToolTipText(diceHelp);
+		diceP.setToolTipText("<html><p width=\"180\">"+diceHelp+"</html>");
 	    scores = new JPanel(new FlowLayout(FlowLayout.CENTER,20,2));
 	    scores.setBounds(100,ypos,300,25);  // TODO geom based on previous geom
 		ypos+=30;
@@ -332,7 +336,7 @@ class FillrBustGui extends JFrame{
 	    choices.setBackground(Color.BLACK);
 		ypos+=125;
 	    choices.setBorder(BorderFactory.createLineBorder(Color.GREEN));
-		choices.setToolTipText(optionHelp);
+		choices.setToolTipText("<html><p width=\"180\">"+optionHelp+"</html>");
           optionA = new JButton("quit");
           optionB = new JButton("optionB");
 	    //actions2.setBounds(300,270,100,30);
@@ -584,14 +588,13 @@ class FillrBustGui extends JFrame{
 	 */
 	public void getNewTarget (){
 		//System.out.println("'Change the score to win' is unimplemented.\n");
-		String s = (String)JOptionPane.showInputDialog(
+		String s = JOptionPane.showInputDialog(
 				frame,"Enter a new max score: "
 				,myGame.getMaxScore()
 		);
-		int maxScore = myGame.getMaxScore();
 		if (s!=null){
 			try {
-				maxScore = Integer.parseInt(s);
+				int maxScore = Integer.parseInt(s);
 				winningScore.setText(s);
 				myGame.setMaxScore(maxScore);
 			}catch (NumberFormatException e)  {
@@ -600,6 +603,7 @@ class FillrBustGui extends JFrame{
 		}
 	}
 
+	/*
 	public void saveGame() {
 		//notTODO
 	}
@@ -607,18 +611,21 @@ class FillrBustGui extends JFrame{
 	public void readGame() {
 		//notTODO
 	}
+	 */
 
 	public void makeRCfile() {
-		//TODO
 		config.writeConfig(frame, myGame.getMaxScore(), myGame.getPlist());
 	}
 
-	public void toggleHoverHelp() {
-		//TODO
+	public void toggleHoverHelp(String help) {
+		//TODO make this work
+		MyDialog showHelp = new MyDialog(frame, help);
+		showHelp.pack();
+		showHelp.setVisible(true);
 	}
 
 	public void addNewPlayer() {
-		String s = (String)JOptionPane.showInputDialog(
+		String s = JOptionPane.showInputDialog(
 				frame,"Enter the name of the new player: \n"
 				+" prepend 'ai' if player is computer controlled.\n"
 				+" if last character is digit, it sets the riskiness."
@@ -679,11 +686,11 @@ class FillrBustGui extends JFrame{
 		//String[] list = {"Clyde","aiNancy4"};
 		//int winner = 5000;
 		//boolean doGui = true;
-		boolean debug = false;
+		//boolean debug = false;
 		if (args.length >0){
-			ArrayList<String> temp = new ArrayList<String>();
+			ArrayList<String> temp = new ArrayList<>();
 			for (int i=0; i<args.length;i++) {
-				if (args[i].equals("-d")) debug = true;
+				//if (args[i].equals("-d")) debug = true;
 				if (args[i].equals("-g")) doGui = false;
 				if (args[i].equals("-g")) config.gui = false;
 				else if (args[i].equals("-m")) {
@@ -699,11 +706,8 @@ class FillrBustGui extends JFrame{
 			if (!temp.isEmpty()) config.players = temp.toArray(list);
 		}
 		if (doGui) {
-			int finalWinner = winner;
-			String[] finalList = list;
 			java.awt.EventQueue.invokeLater(new Runnable() {
 			  public void run() {
-				//new FillrBustGui(finalList, finalWinner).setVisible(true);
 				new FillrBustGui(config).setVisible(true);
 			  }
 			});
