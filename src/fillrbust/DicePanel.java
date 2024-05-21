@@ -117,15 +117,15 @@ class DicePanel extends JPanel{
      * @return String where '1' indicates it has been selected; '0' otherwise
      */
     public String getSelected() {
-		String out = "";
+		StringBuilder out = new StringBuilder();
 		for (JToggleButton eac: dice) {
-			if (eac.isSelected()) out+="1";
-			else out+="0";
+			if (eac.isSelected()) out.append("1");
+			else out.append("0");
 		}
-		return out;
+		return out.toString();
     }
 
-    public static void main(String args[]){
+    public static void main(String[] args){
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
 				JFrame frame = new JFrame("Show Dice Panel");

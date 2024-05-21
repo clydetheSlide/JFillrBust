@@ -21,8 +21,12 @@ public class FBConfig {
 	int fontSize;
 	String configFile;
 
+	public static String defaultFile() {
+		return ".fillrbustrc";
+	}
+
 	public void defaults() {
-		configFile = "./.fillrbustrc";
+		configFile = defaultFile();
 		goal = 5000;
 		players = new String[]{"Clyde", "aiNancy5"};
 		gui = true;
@@ -62,20 +66,28 @@ public class FBConfig {
 				switch (data[0]) {
 					case "WINNING_SCORE":
 						goal = Integer.parseInt(data[1]);
+						break;
 					case "PLAYER":
 						temp.add(data[1]);
+						break;
 					case "CARDS_DIR":
 						cardDir = data[1];
+						break;
 					case "DICE_DIR":
 						diceDir = data[1];
+						break;
 					case "GUI":
 						gui = data[1].equalsIgnoreCase("true");
+						break;
 					case "FONT_SIZE":
 						fontSize = Integer.parseInt(data[1]);
+						break;
 					case "POV":
 						pov = data[1].equalsIgnoreCase("true");
+						break;
 					case "SPEAK":
 						speak = data[1].equalsIgnoreCase("true");
+						break;
 				}
 			}
 			myReader.close();
@@ -90,7 +102,7 @@ public class FBConfig {
 	}
 
 	public FBConfig() {
-		this(null);
+		this(FBConfig.defaultFile());
 	}
 
 	public void writeConfig(JFrame master, int max, String[] players) {
