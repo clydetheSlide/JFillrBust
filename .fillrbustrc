@@ -1,0 +1,9 @@
+WINNING_SCORE 5000
+PLAYER Me
+PLAYER aiFoe5
+CARDS_DIR images/Cards/Orig/
+DICE_DIR images/Dice/Medium/
+GUI true
+FONT_SIZE 14
+POV false
+SPEAK false

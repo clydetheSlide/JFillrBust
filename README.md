@@ -24,7 +24,7 @@ Command line parameters are available to control that,
 > <prompt\> java -jar <path_to_jar> -p YourName -p aiOpponent -m 10000
 
 Any number of players, interactive or computer driven, can be declared.
-The other way is to generate a config file.
-The easiest way to do that is modify one that the code generates.
-Use the Game menu to "save rc file". Then modify the appropriate field(s).
+The same information and more is read from a config file.
 The program looks for .fillrbust in the directory from where it is started.
+An example is provided. It is a simple ASCII file,
+so it is easy to modify the appropriate field(s).
