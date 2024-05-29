@@ -176,6 +176,7 @@ class FillrBustGui extends JFrame{
     JMenuBar mbar;
     JMenu game;
     JMenu help;
+    Dimension[] frameDims;
 
     ArrayList<UserPanel> players;
 	int currentPlayer;
@@ -217,7 +218,7 @@ class FillrBustGui extends JFrame{
 	 *                           1-> actions
 	 */
 	Dimension[] getDims(int numPlayers, String cardFolder, String diceFolder){
-		int widthU = numPlayers*80;
+		int widthU = numPlayers*110;
 		ImageIcon tem;
 		System.out.println("DiceDir: "+diceFolder);
 		tem= new ImageIcon(getClass().getResource(diceFolder+"one.gif"));
@@ -248,9 +249,9 @@ class FillrBustGui extends JFrame{
 	   //myGame = new FillRBustGame(names, targetScore);
 	   myGame = new FillRBustGame(config.players, config.goal);
 	   //System.out.print("FillrBustGui built myGame");
-	   Dimension[] frameDims = getDims(config.players.length, config.cardDir, config.diceDir);
+	   frameDims = getDims(config.players.length, config.cardDir, config.diceDir);
 	   cardFolder = config.cardDir;
-       frame = new JFrame("Play FillRBust");
+         frame = new JFrame("Play FillRBust");
          frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //  _______________________________________
 		 //frame.setSize(700,700);                              //  |        Card          |               |
          frame.setSize(frameDims[0].width, frameDims[0].height);//  |                      |               |
@@ -308,7 +309,7 @@ class FillrBustGui extends JFrame{
 		actions.setBackground(Color.BLACK);
 	    //Image titleImg = Toolkit.getDefaultToolkit().getImage("title.gif");not
 	      ImageIcon imi =new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
-          card = new JButton(new ImageIcon(getClass().getResource(cardFolder+"title.gif")));
+          card = new JButton(imi);
 	    card.setBounds(200,ypos, imi.getIconWidth(), imi.getIconHeight());  // TODO geom based on image size
 		card.setToolTipText("<html><p width=\"180\">"+cardHelp+"</html>");
 		ypos+=imi.getIconHeight();
@@ -319,7 +320,7 @@ class FillrBustGui extends JFrame{
 	    diceP.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		diceP.setToolTipText("<html><p width=\"180\">"+diceHelp+"</html>");
 	    scores = new JPanel(new FlowLayout(FlowLayout.CENTER,20,2));
-	    scores.setBounds(100,ypos,300,25);
+	    scores.setBounds(80,ypos,400,25);
 		ypos+=30;
 	    scores.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 	    scores.setBackground(Color.BLACK);
@@ -430,12 +431,42 @@ class FillrBustGui extends JFrame{
 		    showHelp.setVisible(true);
                 }
 	    });
-		ActionListener updateTask = new ActionListener() {
-         @Override
-         public void actionPerformed(ActionEvent evt) {
-            URrepaint();  // check to see if the Computer player is playing
-         }
-      };
+	    ActionListener updateTask = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+		     URrepaint();  // check to see if the Computer player is playing
+		}
+	    };
+	    Action winUp = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    frameDims[0].height+=20;
+		     frame.setSize(frameDims[0].width, frameDims[0].height);
+		}
+	    };
+	    card.getInputMap().put(KeyStroke.getKeyStroke('e'),
+                            "winUp");
+	    card.getActionMap().put("winUp",
+                             winUp);
+	    Action fontDn = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    config.fontSize-=4;
+		    details.setFont(new Font("Ænigma Scrawl 4 BRK",Font.PLAIN, config.fontSize));
+		}
+	    };
+	    details.getInputMap().put(KeyStroke.getKeyStroke('f'),
+                            "fontDn");
+	    details.getActionMap().put("fontDn",
+                             fontDn);
+	    Action fontUp = new AbstractAction() {
+		public void actionPerformed(ActionEvent e) {
+		    config.fontSize+=4;
+		    details.setFont(new Font("Ænigma Scrawl 4 BRK",Font.PLAIN, config.fontSize));
+		}
+	    };
+	    details.getInputMap().put(KeyStroke.getKeyStroke('F'),
+                            "fontUp");
+	    details.getActionMap().put("fontUp",
+                             fontUp);
 
 	    actions.setLayout(null);
 	    top.setLayout(null);
@@ -519,6 +550,35 @@ class FillrBustGui extends JFrame{
 			System.out.println(name+" not equal "+players.get(currentPlayer).getUName());
 			ComplainLoudly("Player name mismatch");
 		}
+	}
+
+	/**
+	 * change the size of the frame
+	 * to accomodate changes to:
+	 *    # of players
+	 *    size of dice
+	 *    size of card
+	 */
+	void reSizeFrame() {
+	    // TODO
+	   frameDims = getDims(config.players.length, config.cardDir, config.diceDir);
+         frame.setSize(frameDims[0].width, frameDims[0].height);//  |                      |               |
+		top.setBounds(0,0,frameDims[0].width,frameDims[1].height);
+		detailsP.setBounds(0,frameDims[1].height,
+					frameDims[0].width,frameDims[0].height-frameDims[1].height);
+		data.setBounds(frameDims[1].width,0,
+				frameDims[0].width-frameDims[1].width, frameDims[1].height);
+		actions.setBounds(0,0,frameDims[1].width,frameDims[1].height);
+		int ypos = 0;
+	      ImageIcon imi =new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
+	    card.setBounds(200,ypos, imi.getIconWidth(), imi.getIconHeight());  // TODO geom based on image size
+		ypos+=imi.getIconHeight();
+	    imi =new ImageIcon(getClass().getResource(config.diceDir+"one.gif"));
+	    diceP.setBounds(0,ypos,frameDims[1].width,imi.getIconHeight());
+	    ypos+=imi.getIconHeight();
+	    scores.setBounds(80,ypos,400,25);
+		ypos+=30;
+	    choices.setBounds(200,ypos,100,95);
 	}
 
 	public void ComplainLoudly(String complaint, String topic, int large) {
@@ -638,6 +698,9 @@ class FillrBustGui extends JFrame{
 		System.out.println("User Panel size:"+users.getSize());
 		for (UserPanel each: players) System.out.println(each.getSize());
 		// TODO Learn how to make frame expand to accomodate more users or scroll
+		config.players = Arrays.copyOf(config.players, config.players.length + 1);
+		config.players[config.players.length - 1] = entry.getName();
+		reSizeFrame();
 	}
 
     String mapCardImage(Cards.Name type){

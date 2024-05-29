@@ -37,8 +37,8 @@ class DicePanel extends JPanel{
 	  setBorder(BorderFactory.createLineBorder(Color.GREEN));
 	IMG_DIR = diceDir;
 	dice =  new ArrayList<JToggleButton>();
-	ImageIcon dicImg = new ImageIcon(Toolkit.getDefaultToolkit().getImage(IMG_DIR+"undieb.gif"));
-	ImageIcon dicPImg = new ImageIcon(Toolkit.getDefaultToolkit().getImage(IMG_DIR+"undie.gif"));
+	ImageIcon dicImg = new ImageIcon(getClass().getResource(IMG_DIR+"undieb.gif"));
+	ImageIcon dicPImg = new ImageIcon(getClass().getResource(IMG_DIR+"undie.gif"));
 	//System.out.println("building dice panel");
 	for (int i=0;i<7;i++){
 	    JToggleButton each =  new JToggleButton(dicImg);
@@ -67,6 +67,7 @@ class DicePanel extends JPanel{
      */
     public void setDice(String set, String picked){
 	boolean reserv = false;
+	//System.out.println("in setDice, dir = "+IMG_DIR);
 	for (int i=0;i<set.length();i++) {
 	    char c = set.charAt(i);
 	    JToggleButton bb = dice.get(i);

@@ -37,7 +37,7 @@ class testDicePanel extends JFrame{
 		top.setBounds(0,0,700,80);
 	  top.setBackground(Color.BLACK);
 
-	   diceP = new DicePanel();
+	   diceP = new DicePanel("images/Dice/Medium");
 		diceP.setBounds(0,80,700,70);
 	    //System.out.println(diceP);
 	  dice = diceP.getDice();

@@ -191,6 +191,9 @@ class FillRBustGame {
 					if (player.getName().equals(highScorer)) {
 						gui.addDetails(" You can't take vengeance on yourself;\n" +
 								" Draw another card\n");
+					} else if (high_score<2500){
+					    gui.addDetails(" Nobody has enough points to warrant vengeance;\n"+
+								" Draw another card\n");
 					} else {
 						gui.addDetails(String.format(" %s has %d points. Do you want to take vengeance?\n Or would you rather draw another card?\n", highScorer, high_score));
 						state = STATES.DREWVENGEANCE;
@@ -416,6 +419,7 @@ class FillRBustGame {
 							nupdate-=1;
 							return;
 						}
+						mustbust=false;
 					}
 					// set up next player
 					tempScore = 0;
@@ -833,36 +837,94 @@ class FillRBustGame {
 	 * using the assigned risk of the player
 	 * @return response
 	 */
-	String aiResponse(){
-		AIPlayer player = (AIPlayer) this.player;
+	public String aiResponse(){
+	    AIPlayer p = (AIPlayer) this.player;
+	    return aiResponse(p,1200);
+	}
+	public String aiResponse(Player p){
+	    return aiResponse(p,1200);
+	}
+	public String aiResponse(Player p, int delay){
+		AIPlayer player = (AIPlayer) p;
 		try {
-			sleep(1200);
+			sleep(delay);
 		} catch (InterruptedException e){
 			int fred = 4;
 		}
 		if (state == STATES.DRAWCARD) return "c";
 		if (state == STATES.ROLLFIRST) return "d";
 		if (state == STATES.WINNER) return "q";
-		int prob = player.getRisker() - randy.nextInt(10);
+		int prob = randy.nextInt(10) - player.getRisker();
+		// higher prob -> higher conservativeness
 		if (state == STATES.ROLLED){
 			if (mustbust || mustfill ||vengeance || doubletrouble>0) return "a";  // until I develop smarts to select dice just roll what's there
-			if (prob>5) return "a";  // higher risk -> roll
+			// TODO need to take into the size of the score to risk, proximity to winning, etc
+			int pDiff = probOffset();
+			if (prob+pDiff>0) return "a";  // higher risk -> roll
 			else return "b";
 		}
 		if (state == STATES.FILLED){
 			if (mustbust || doubletrouble>0) return "a";
-			// need to take proximity to winning into account
-			if (prob>5) return "b";  // higher risk -> continue
+			// TODO need to take proximity to winning into account
+			int pDiff = probOffset();
+			if (prob+pDiff>1) return "b";  // higher risk -> continue
 			else return "a";         // score
 		}
 		if (state == STATES.DREWVENGEANCE){
-			// need to take proximity to winning into account
-			// need to take into account nearness to the leader
-			if (prob>5) return "b";  // higher risk -> take vengeance
+			// TODO need to take proximity to winning into account
+			// TODO need to take into account nearness to the leader
+			int pDiff = probOffset();
+			if (prob+pDiff>1) return "b";  // higher risk -> take vengeance
 			else return "a";         // draw again
 		}
 
 		return "q";
+	}
+
+	/**
+	 * offset the probability
+	 * to take into account:
+	 *   the score that is at risk
+	 *   the proximity of the player to the winning score
+	 *   the proximity of the leader to the winning score
+	 *   the proximity of the player to the leading player
+	 *   the number of dice left to roll
+	 */
+	int probOffset() {
+	    int proboff=0;
+	    if (tempScore < 200) {
+		System.out.println(" Dinky roll; take more risk");
+	       	proboff+=1;
+	    }
+	    if (tempScore > 400){
+		System.out.println(" Big roll; take less risk");
+	       	proboff-=1;
+	    }
+	    if (runningScore <200){
+		System.out.println(" Dinky score; take more risk");
+	       	proboff+=1;
+	    }
+	    if (runningScore > 1000){
+		System.out.println(" Big score; take less risk");
+	       	proboff-=1;
+	    }
+	    if (dice.getReserved().length()>3){
+		System.out.println(" Few dice to roll; take less risk");
+	       	proboff-=1;
+	    }
+	    if (max_score - player.getScore() <1000){
+		System.out.println(" Close to winning; take less risk");
+	       	proboff -=1;
+	    }
+	    if (max_score - high_score <1000){
+		System.out.println(" leader close to winning; take more risk");
+	       	proboff +=1;
+	    }
+	    if (high_score - player.getScore() >1000){
+		System.out.println(" you are far behind; take more risk");
+	       	proboff +=1;
+	    }
+	    return proboff;
 	}
 
 	/**
@@ -882,7 +944,7 @@ class FillRBustGame {
 			catch (InterruptedException f){
 				int fred = 5;
 			}
-			stuff = aiResponse();
+			stuff = aiResponse(player);
 			if (stuff.indexOf('q') >= 0) aiResponder = false;
 			if (stuff.indexOf('a') >= 0) update("OPTION_A");
 			if (stuff.indexOf('b') >= 0) update("OPTION_B");
@@ -914,7 +976,7 @@ class FillRBustGame {
 			if (!aiResponder) {
 				stuff = sc.nextLine();
 			}else{
-				stuff = aiResponse();
+				stuff = aiResponse(player);
 			}
 			if (stuff.indexOf('q') >= 0) notdone = false;
 			if (stuff.indexOf('a') >= 0) update("OPTION_A");
@@ -927,6 +989,60 @@ class FillRBustGame {
 			if (stuff.indexOf('d') >= 0) update("DICE "
 					+stuff.substring(1));
 			if (stuff.indexOf('m') >= 0) update("MAX_SCORE "
+					+stuff.substring(1));
+		}
+
+	}
+
+	void tupdate(String s) {
+	    System.out.println(s);
+	}
+
+	public Player getPlayer(){
+	    return player;
+	}
+	
+	/**
+	 * Artificially set te states of the game
+	 * for testing purposes
+	 * STATE, mustbust,mustfil,vengeance,doubleTrouble
+	 */
+	public void setState(STATES state, boolean mb, boolean mf, boolean v, boolean dt) {
+	    this.state=state;
+	    mustbust=mb;
+	    mustfill=mf;
+	    vengeance=v;
+	    doubletrouble=dt?2:0;
+	}
+
+	void stealthtextInterface() {
+		boolean notdone = true;
+		Scanner sc=null;
+		if (!aiResponder) {
+			sc = new Scanner(System.in);
+		}
+		String stuff;
+		while (notdone) {
+			if (state == STATES.WINNER) {
+				notdone = false;
+				break;
+			}
+			if (!aiResponder) {
+				stuff = sc.nextLine();
+			}else{
+				stuff = aiResponse(player);
+			}
+			if (stuff.indexOf('q') >= 0) notdone = false;
+			if (stuff.indexOf('a') >= 0) tupdate("OPTION_A");
+			if (stuff.indexOf('b') >= 0) tupdate("OPTION_B");
+			if (stuff.indexOf('c') >= 0) {
+				if (debug)update("CARD "
+						+stuff.substring(1));
+				else tupdate("CARD");
+			}
+			if (stuff.indexOf('d') >= 0) tupdate("DICE "
+					+stuff.substring(1));
+			if (stuff.indexOf('m') >= 0) tupdate("MAX_SCORE "
 					+stuff.substring(1));
 		}
 

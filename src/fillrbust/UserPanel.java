@@ -28,7 +28,7 @@ class UserPanel extends JPanel {
     }
     /* for initial development of layout dont bind to a player */
     UserPanel(String uname) {
-	setPreferredSize(new Dimension(80,300));
+	setPreferredSize(new Dimension(110,300));
 	if (uname.indexOf("ai")==0){
 		//System.out.println(uname+" is ai");
 		int es = uname.length();
