@@ -338,7 +338,7 @@ class FillrBustGui extends JFrame{
 		ypos+=125;
 	    choices.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 		choices.setToolTipText("<html><p width=\"180\">"+optionHelp+"</html>");
-          optionA = new JButton("quit");
+          optionA = new JButton("optionA");
           optionB = new JButton("optionB");
 	    //actions2.setBounds(300,270,100,30);
 	    choices.add(optionA);

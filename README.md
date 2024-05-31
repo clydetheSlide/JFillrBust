@@ -1,6 +1,6 @@
 # FillRBust
 FillRBust is a card and dice game I have enjoyed with real cards and dice.
-As a silly exercize I originally captured the process of playing it in a Python script,
+As a silly exercize I originally captured the process of playing it in a [Python script](https://github.com/clydetheSlide/FillrBust),
 then built a GUI with TKinter.
 This repository is a rewrite in Java using Swing and AWT.
 
