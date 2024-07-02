@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 
 public class FBConfig {
 	int goal;
-	String[] players;
+	String[] players;       // player name including preceding ai and risk
 	boolean gui;
 	boolean speak;
 	boolean pov;
@@ -92,7 +92,11 @@ public class FBConfig {
 			}
 			myReader.close();
 			configFile = filename;
-			players = (String[]) temp.toArray();
+			//players = (String[]) temp.toArray();
+			players = new String[temp.size()];
+			for (int ii = 0; ii< temp.size(); ii++) {
+				players[ii]=temp.get(ii);
+			}
 		} catch (NullPointerException e) {
 			System.out.println("A NullPointererror occurred reading config; used defaults.");
 		} catch (FileNotFoundException | ClassCastException e) {

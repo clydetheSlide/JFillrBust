@@ -97,7 +97,7 @@ class Dice {
 		int num = 6 - reserved.length();
 		ArrayList<Integer> dice = new ArrayList<Integer>();
 		for (int i = 0; i < num; i++) {
-			int single = Integer.valueOf(testRoll.substring(i,i+1))-1;
+			int single = Integer.parseInt(testRoll.substring(i,i+1))-1;
 			dice.add(single);
 		}
 		Collections.sort(dice);

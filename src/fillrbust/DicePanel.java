@@ -1,14 +1,14 @@
 package fillrbust;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+//import java.awt.event.ActionListener;
+//import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.io.InputStream;
+//import java.io.InputStream;
 import java.util.*;
 
 /* DicePanel
@@ -36,6 +36,7 @@ class DicePanel extends JPanel{
 	  setBackground(Color.BLACK);
 	  setBorder(BorderFactory.createLineBorder(Color.GREEN));
 	IMG_DIR = diceDir;
+	System.out.println(IMG_DIR);
 	dice =  new ArrayList<JToggleButton>();
 	ImageIcon dicImg = new ImageIcon(getClass().getResource(IMG_DIR+"undieb.gif"));
 	ImageIcon dicPImg = new ImageIcon(getClass().getResource(IMG_DIR+"undie.gif"));
@@ -83,7 +84,7 @@ class DicePanel extends JPanel{
 		reserv = true;
 	    }
 		try {
-			InputStream is;
+			//InputStream is;
 			bb.setIcon(new ImageIcon(getClass().getResource(
 					String.format("%sb.gif",iname))));
 			bb.setSelectedIcon(new ImageIcon(getClass().getResource(

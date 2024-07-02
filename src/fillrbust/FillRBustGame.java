@@ -858,21 +858,17 @@ class FillRBustGame {
 		// higher prob -> higher conservativeness
 		if (state == STATES.ROLLED){
 			if (mustbust || mustfill ||vengeance || doubletrouble>0) return "a";  // until I develop smarts to select dice just roll what's there
-			// TODO need to take into the size of the score to risk, proximity to winning, etc
 			int pDiff = probOffset();
 			if (prob+pDiff>0) return "a";  // higher risk -> roll
 			else return "b";
 		}
 		if (state == STATES.FILLED){
 			if (mustbust || doubletrouble>0) return "a";
-			// TODO need to take proximity to winning into account
 			int pDiff = probOffset();
 			if (prob+pDiff>1) return "b";  // higher risk -> continue
 			else return "a";         // score
 		}
 		if (state == STATES.DREWVENGEANCE){
-			// TODO need to take proximity to winning into account
-			// TODO need to take into account nearness to the leader
 			int pDiff = probOffset();
 			if (prob+pDiff>1) return "b";  // higher risk -> take vengeance
 			else return "a";         // draw again

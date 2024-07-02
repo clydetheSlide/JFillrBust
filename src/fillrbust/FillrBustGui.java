@@ -8,11 +8,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.io.IOException;
-import java.io.InputStream;
+//import java.io.IOException;
+//import java.io.InputStream;
 import java.util.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+//import java.io.BufferedReader;
+//import java.io.InputStreamReader;
 
 /* FillrBustGui
  * Shows the state of the game by displaying graphical depictions of
@@ -560,7 +560,6 @@ class FillrBustGui extends JFrame{
 	 *    size of card
 	 */
 	void reSizeFrame() {
-	    // TODO
 	   frameDims = getDims(config.players.length, config.cardDir, config.diceDir);
          frame.setSize(frameDims[0].width, frameDims[0].height);//  |                      |               |
 		top.setBounds(0,0,frameDims[0].width,frameDims[1].height);
@@ -697,9 +696,9 @@ class FillrBustGui extends JFrame{
 		System.out.println("'add new player' is unimplemented.\n");
 		System.out.println("User Panel size:"+users.getSize());
 		for (UserPanel each: players) System.out.println(each.getSize());
-		// TODO Learn how to make frame expand to accomodate more users or scroll
 		config.players = Arrays.copyOf(config.players, config.players.length + 1);
-		config.players[config.players.length - 1] = entry.getName();
+		//config.players[config.players.length - 1] = entry.getName();
+		config.players[config.players.length - 1] = entry.getUName();
 		reSizeFrame();
 	}
 
