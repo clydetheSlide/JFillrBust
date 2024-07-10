@@ -142,6 +142,8 @@ class FillRBustGame {
 	 * this is where the rules of the game are codified.
 	 * For each state of the game, determine how to respond
 	 * to an action button
+	 *
+	 * @param whoDunnit which button called the update
 	 */
 	public void update(String whoDunnit) {
 		nupdate  +=1;
