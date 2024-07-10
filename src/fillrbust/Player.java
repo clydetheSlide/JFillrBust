@@ -42,4 +42,12 @@ class Player{
     public void changeName(String name){
 	this.name = name;
     }
+
+	/** for testing purposes, set players total score
+	 *
+	 * @param sc
+	 */
+	public void tSetSc(int sc){
+		score = sc;
+	}
 }

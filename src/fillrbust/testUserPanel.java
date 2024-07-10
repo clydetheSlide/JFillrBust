@@ -41,13 +41,13 @@ public class testUserPanel extends JFrame{
 	  left.add(data2);
 	  left.add(data3);
 	  // now the purpose of this test
-	  UserPanel clyde = new UserPanel("Clyde");
+	  UserPanel clyde = new UserPanel("Clyde", 0);
 	  users.add(clyde);
 	  players.add(clyde);
-	  UserPanel nancy = new UserPanel("Nancy");
+	  UserPanel nancy = new UserPanel("Nancy",1);
 	  users.add(nancy);
 	  players.add(nancy);
-	  UserPanel audrey = new UserPanel("Audrey");
+	  UserPanel audrey = new UserPanel("Audrey",2);
 	  users.add(audrey);
 	  players.add(audrey);
 	  currentPanel = nancy;
@@ -64,7 +64,8 @@ public class testUserPanel extends JFrame{
           data1.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent fred) {
                     //System.out.println("poked button1");
-		    updateUserName();
+					//updateUserName();
+	                summary();
                 }
           });
           data2.addActionListener(new ActionListener() {
@@ -80,22 +81,51 @@ public class testUserPanel extends JFrame{
                 }
           });
 
+		  for (UserPanel each: players) {
+			  each.myButton().addActionListener(new ActionListener() {
+				  public void actionPerformed(ActionEvent modme)
+				  {
+					  //System.out.println("user name button");
+					  //System.out.println(modme);
+					  updateUserName(each);
+				  }
+			  });
+		  }
 	  
 	  setLayout(null);
 	  setVisible(true);
      }
 
+	/** change name of the current player */
+	void updateUserName(UserPanel up){
+		pname=(pname+1)%(changees.length);
+		up.changeName(changees[pname]);
+	}
+
+	/** change name of the current player */
      void updateUserName(){
-		    pname=(pname+1)%(changees.length);
 		    currentPanel.changeName(changees[pname]);
+			updateUserName(currentPanel);
      }
 
+	 /** add a new member to the set of players */
      void addPlayer(){
-	  UserPanel somebody = new UserPanel("Todd");
+	  UserPanel somebody = new UserPanel("Todd", players.size());
 	  users.add(somebody);
 	  players.add(somebody);
+	     somebody.myButton().addActionListener(new ActionListener() {
+		     public void actionPerformed(ActionEvent modme)
+		     {
+			     //System.out.println("user name button");
+			     //System.out.println(modme);
+			     updateUserName(somebody);
+		     }
+	     });
      }
 
+	 /** Change score of current player
+	  * and switch to next player
+	  * */
      void updateScore() {
 	 pscores=(pscores+1)%(scores.length);
 	 players.get(player).toggleTurn();
@@ -106,7 +136,15 @@ public class testUserPanel extends JFrame{
 	 players.get(player).addScore(scores[pscores]);
      }
 
-     public static void main(String args[]){
+	/** summarize users' scores
+	 */
+	public void summary() {
+		for (UserPanel each:players) {
+			System.out.println(each.getUName()+" has a score of "+each.getScore());
+		}
+	}
+
+	public static void main(String[] args){
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new testUserPanel().setVisible(true);

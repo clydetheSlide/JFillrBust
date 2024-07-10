@@ -1,6 +1,6 @@
-WINNING_SCORE 5000
-PLAYER Me
-PLAYER aiFoe5
+WINNING_SCORE 5250
+PLAYER Myself
+PLAYER aiFoe1
 CARDS_DIR images/Cards/Orig/
 DICE_DIR images/Dice/Medium/
 GUI true

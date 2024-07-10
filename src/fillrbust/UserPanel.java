@@ -22,12 +22,14 @@ class UserPanel extends JPanel {
     Player player;
 	String uname;
     boolean turn = false;
+	int index;
 
-    UserPanel(Player player){
-	this.player = player;
+    UserPanel(Player player, int index){
+	  this.player = player;
+	  this.index = index;
     }
     /* for initial development of layout dont bind to a player */
-    UserPanel(String uname) {
+    UserPanel(String uname, int index) {
 	setPreferredSize(new Dimension(110,300));
 	if (uname.indexOf("ai")==0){
 		//System.out.println(uname+" is ai");
@@ -44,6 +46,7 @@ class UserPanel extends JPanel {
 		this.uname = uname;
 		//System.out.println(uname+" is not ai");
 	}
+	this.index = index;
 	name = new JButton(this.uname);
 	scoreToDate = new JLabel("0");
 	scores = new JTextArea(25,6);
@@ -58,23 +61,40 @@ class UserPanel extends JPanel {
     }
 
     public void changeName(String newn){
+	    if (newn.indexOf("ai")==0){
+		    //System.out.println(uname+" is ai");
+		    int es = newn.length();
+		    char aa =newn.charAt(es-1);
+		    //System.out.println(aa);
+		    if (Character.isDigit(aa))
+		    {
+			    es -=1;
+			    //System.out.println(uname + " has risk " + aa);
+		    }
+		    this.uname = newn.substring(0, es);
+	    } else {
+		    this.uname = newn;
+		    //System.out.println(uname+" is not ai");
+	    }
 	name.setText(newn);
     }
 
 	/**
 	 * update the total score for the player
-	 * @param news
+	 * @param news is the new score for the user
 	 */
     public void newScore(String news){
 	scoreToDate.setText(news);
     }
 	/**
 	 * update the total score for the player
-	 * @param news
+	 * @param news is the new score for the user
 	 */
     public void newScore(int news){
 	scoreToDate.setText(String.format("%d",news));
     }
+
+	public String getScore() { return scoreToDate.getText();}
 
 	/**
 	 * add a score to the player's scoresheet
@@ -111,4 +131,9 @@ class UserPanel extends JPanel {
 	 * @return player's name
 	 */
 	public String getUName() { return uname;}
+
+	public int getIndex() {return index;}
+
+	public JButton myButton() {return name;
+	}
 }

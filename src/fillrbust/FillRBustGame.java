@@ -52,7 +52,7 @@ class FillRBustGame {
 	int high_score = 0;
 	String highScorer = "";
 	boolean aiResponder = false;
-	boolean debug = false;
+	boolean debug = false; //true;
 	int nupdate;
 
 	public FillRBustGame(String[] plist, int max) {
@@ -841,6 +841,7 @@ class FillRBustGame {
 	    AIPlayer p = (AIPlayer) this.player;
 	    return aiResponse(p,1200);
 	}
+	static final int RISK_RANGE = 16;
 	public String aiResponse(Player p){
 	    return aiResponse(p,1200);
 	}
@@ -854,23 +855,37 @@ class FillRBustGame {
 		if (state == STATES.DRAWCARD) return "c";
 		if (state == STATES.ROLLFIRST) return "d";
 		if (state == STATES.WINNER) return "q";
-		int prob = randy.nextInt(10) - player.getRisker();
+		int prob = randy.nextInt(RISK_RANGE);       // [0 -> RISK_RANGE]  median <=RISK_RANGE/2
+		if (debug) System.out.println("rand = "+prob);
+		prob += player.getRisker()-4;
+		if(debug) System.out.println("rand+player_risk = "+prob);
 		// higher prob -> higher conservativeness
 		if (state == STATES.ROLLED){
 			if (mustbust || mustfill ||vengeance || doubletrouble>0) return "a";  // until I develop smarts to select dice just roll what's there
 			int pDiff = probOffset();
-			if (prob+pDiff>0) return "a";  // higher risk -> roll
+			if(debug)System.out.println("state offset ="+pDiff);
+			int rDiff = (int)(RISK_RANGE*(1.-rollRisk(6-dice.getReserved().length())));
+			if(debug)System.out.println("dice offset ="+rDiff);
+			int choice = prob+pDiff+rDiff;
+			if(debug)System.out.println("choice param = "+choice +"; >"+RISK_RANGE/2 +"==> roll");
+			if (prob+pDiff>RISK_RANGE/2) return "a";  // higher risk -> roll
 			else return "b";
 		}
 		if (state == STATES.FILLED){
 			if (mustbust || doubletrouble>0) return "a";
-			int pDiff = probOffset();
-			if (prob+pDiff>1) return "b";  // higher risk -> continue
+			int pDiff = probOffsetCV();
+			if(debug)System.out.println("state offset ="+pDiff);
+			int choice = prob+pDiff;
+			if(debug)System.out.println("choice param = "+choice +"; >"+(RISK_RANGE/2 +1) +"==> continue");
+			if (prob+pDiff>(RISK_RANGE/2 +1)) return "b";  // higher risk -> continue
 			else return "a";         // score
 		}
 		if (state == STATES.DREWVENGEANCE){
-			int pDiff = probOffset();
-			if (prob+pDiff>1) return "b";  // higher risk -> take vengeance
+			int pDiff = probOffsetCV();
+			if(debug)System.out.println("state offset ="+pDiff);
+			int choice = prob+pDiff;
+			if(debug)System.out.println("choice param = "+choice +"; >"+(RISK_RANGE/2 +1) +"==> vengeance");
+			if (prob+pDiff>(RISK_RANGE/2 +1)) return "b";  // higher risk -> take vengeance
 			else return "a";         // draw again
 		}
 
@@ -889,38 +904,72 @@ class FillRBustGame {
 	int probOffset() {
 	    int proboff=0;
 	    if (tempScore < 200) {
-		System.out.println(" Dinky roll; take more risk");
+		    if(debug)System.out.println(tempScore+" is a dinky roll; take more risk");
 	       	proboff+=1;
 	    }
 	    if (tempScore > 400){
-		System.out.println(" Big roll; take less risk");
+		    if(debug)System.out.println(tempScore+" is a big roll; take less risk");
 	       	proboff-=1;
 	    }
-	    if (runningScore <200){
-		System.out.println(" Dinky score; take more risk");
-	       	proboff+=1;
+	    if (runningScore+tempScore <200){
+		    if(debug)System.out.println(runningScore+tempScore+" is a dinky score; take more risk");
+	       	proboff+=2;
 	    }
-	    if (runningScore > 1000){
-		System.out.println(" Big score; take less risk");
-	       	proboff-=1;
-	    }
-	    if (dice.getReserved().length()>3){
-		System.out.println(" Few dice to roll; take less risk");
-	       	proboff-=1;
+	    if (runningScore+tempScore > 800){
+		if(debug)System.out.println(runningScore+tempScore+" is a big score; take less risk");
+	       	proboff-=2;
 	    }
 	    if (max_score - player.getScore() <1000){
-		System.out.println(" Close to winning; take less risk");
+		    if(debug)System.out.println(player.getScore()+" is close to winning; take less risk");
 	       	proboff -=1;
 	    }
 	    if (max_score - high_score <1000){
-		System.out.println(" leader close to winning; take more risk");
+		    if(debug)System.out.println(" leader close to winning; take more risk");
 	       	proboff +=1;
 	    }
 	    if (high_score - player.getScore() >1000){
-		System.out.println(" you are far behind; take more risk");
+		    if(debug)System.out.println(" you are far behind; take more risk");
 	       	proboff +=1;
 	    }
 	    return proboff;
+	}
+
+	/**
+	 * offset the probability
+	 * to take into account:
+	 *   the score that is at risk
+	 *   the proximity of the player to the winning score
+	 *   the proximity of the leader to the winning score
+	 *   the proximity of the player to the leading player
+	 *   the number of dice left to roll
+	 */
+	int probOffsetCV() {
+		int proboff=0;
+		if (max_score - player.getScore()-runningScore <1000){
+			if(debug)System.out.println(player.getScore()+" is close to winning; take less risk");
+			proboff -=1;
+		}
+		if (max_score - high_score <1000){
+			if(debug)System.out.println(" leader close to winning; take more risk");
+			proboff +=1;
+		}
+		if (high_score - player.getScore()-runningScore >1000){
+			if(debug)System.out.println(" you are far behind; take more risk");
+			proboff +=1;
+		}
+		return proboff;
+	}
+
+	/** probability of a scoring roll
+	 *
+	 * @param ndice number of dice to roll
+	 * @return probability (0-> 1), 1 is sure thing
+	 */
+	private double rollRisk(int ndice)
+	{
+		double prob =1.-Math.pow(.66667,(double)ndice);
+		if(debug) System.out.println("prob of success for "+ndice+" dice is "+prob);
+		return (prob);
 	}
 
 	/**
@@ -1003,12 +1052,28 @@ class FillRBustGame {
 	 * for testing purposes
 	 * STATE, mustbust,mustfil,vengeance,doubleTrouble
 	 */
-	public void setState(STATES state, boolean mb, boolean mf, boolean v, boolean dt) {
+	public void setState(STATES state, boolean mb, boolean mf, boolean v, boolean dt,int ndice) {
 	    this.state=state;
 	    mustbust=mb;
 	    mustfill=mf;
 	    vengeance=v;
 	    doubletrouble=dt?2:0;
+		tSetND(ndice);
+	}
+	public void setState(STATES state, boolean mb, boolean mf, boolean v, boolean dt) {
+		setState(state, mb, mf, v, dt, 6) ;
+	}
+	void tSetND(int nd){
+		String ds = "";
+		for (int ii=0;ii<nd;ii++) {
+			if (ii<4)ds+="1";
+			else ds+="5";
+		}
+		dice = new Dice(ds);
+	}
+	void tSetTR(int ts, int rs){
+		tempScore = ts;
+		runningScore = rs;
 	}
 
 	void stealthtextInterface() {

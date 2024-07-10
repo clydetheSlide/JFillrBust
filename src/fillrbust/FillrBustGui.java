@@ -200,7 +200,7 @@ class FillrBustGui extends JFrame{
 		users.setLayout(new BoxLayout(users,BoxLayout.X_AXIS));
 		players = new ArrayList<>();
 		for (String each: playerNames){
-			UserPanel entry = new UserPanel(each);
+			UserPanel entry = new UserPanel(each, players.size());
 			players.add(entry);
 			users.add(entry);
 		}
@@ -689,7 +689,7 @@ class FillrBustGui extends JFrame{
 				+" prepend 'ai' if player is computer controlled.\n"
 				+" if last character is digit, it sets the riskiness."
 		);
-		UserPanel entry = new UserPanel(s);
+		UserPanel entry = new UserPanel(s, players.size());
 		players.add(entry);
 		users.add(entry);
 		myGame.addPlayer(s);
@@ -748,11 +748,11 @@ class FillrBustGui extends JFrame{
 		//String[] list = {"Clyde","aiNancy4"};
 		//int winner = 5000;
 		//boolean doGui = true;
-		//boolean debug = false;
+		boolean debug = false;
 		if (args.length >0){
 			ArrayList<String> temp = new ArrayList<>();
 			for (int i=0; i<args.length;i++) {
-				//if (args[i].equals("-d")) debug = true;
+				if (args[i].equals("-D")) debug = true;
 				if (args[i].equals("-g")) doGui = false;
 				if (args[i].equals("-g")) config.gui = false;
 				else if (args[i].equals("-m")) {

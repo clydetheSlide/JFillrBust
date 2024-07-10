@@ -28,7 +28,7 @@ public class FBConfig {
 	public void defaults() {
 		configFile = defaultFile();
 		goal = 5000;
-		players = new String[]{"Clyde", "aiNancy5"};
+		players = new String[]{"Myself", "aiFoe5"};
 		gui = true;
 		cardDir = "images/Cards/Orig/";  // Orig, Big, Huge
 		diceDir = "images/Dice/Medium/";    // Medium, Big, Orig
