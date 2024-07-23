@@ -31,7 +31,7 @@ class testProbAI {
 			p.tSetSc(randy.nextInt(max));
 		    if (it.aiResponse(p,0).equals("b"))nNo++;
 		}
-		System.out.println(String.format("Chose B %d out of %d",nNo,nit));
+		System.out.printf("Chose B %d out of %d%n",nNo,nit);
 
 		it.setState(FillRBustGame.STATES.FILLED,false,false,false,false);
 		//it.debug = true;
@@ -44,7 +44,7 @@ class testProbAI {
 			p.tSetSc(randy.nextInt(max));
 		    if (it.aiResponse(p,0).equals("b"))nNo++;
 		}
-		System.out.println(String.format("Chose B %d out of %d",nNo,nit));
+		System.out.printf("Chose B %d out of %d%n",nNo,nit);
 
 		//it.debug = true;
 		it.setState(FillRBustGame.STATES.DREWVENGEANCE,false,false,false,false);
@@ -56,6 +56,6 @@ class testProbAI {
 			p.tSetSc(randy.nextInt(max));
 		    if (it.aiResponse(p,0).equals("b"))nNo++;
 		}
-		System.out.println(String.format("Chose B %d out of %d",nNo,nit));
+		System.out.printf("Chose B %d out of %d%n",nNo,nit);
 	}
 }

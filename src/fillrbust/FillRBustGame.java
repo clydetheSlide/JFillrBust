@@ -773,6 +773,29 @@ class FillRBustGame {
 	}
 
 	/**
+	 * reset game state to new game
+	 */
+	public void resetGame() {
+		runningScore = 0;
+		tempScore = 0;
+		high_score = 0;
+		highScorer = "";
+		vengeance = false;
+		mustbust = false;
+		mustfill = false;
+		doubletrouble = 0;
+		nupdate = 0;
+		state = STATES.INIT;
+		aiResponder = false;
+		currentPlayer = 0;
+		for (String each: players.keySet()) {
+			players.get(each).tSetSc(0);
+		}
+		player = players.get(playerList[currentPlayer]);
+		// more TODO
+	}
+
+	/**
 	 * set the score to be the winner
 	 * @param num
 	 */

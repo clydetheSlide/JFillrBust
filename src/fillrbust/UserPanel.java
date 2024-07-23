@@ -136,4 +136,10 @@ class UserPanel extends JPanel {
 
 	public JButton myButton() {return name;
 	}
+
+	public void reset(){
+		scores.setText("");
+		newScore(0);
+		// TODO
+	}
 }

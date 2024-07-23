@@ -139,6 +139,8 @@ class FillrBustGui extends JFrame{
 "At the end of the game, ie when someone's score exceeds the goal and the 'Winner' screen appears,\n"+
 "right clicking in it will allow you to change the goal. This allows for sore losers!";
 
+	String newHelp="Start a new game with the same players.";
+
     String playerHelp="Any time during a game, another player can jump in - with zero score of course.\n\n"+
 "Prepending 'ai' to a name makes that player computer controlled. "+
 "A number at the end of an ai player name indicates the risk that player will accept for decisions "+
@@ -184,7 +186,7 @@ class FillrBustGui extends JFrame{
     ArrayList<JToggleButton> dice;
     JLabel running, potential;
     JButton optionA, optionB, card;
-    JMenuItem quit,rc,addPlayer,target;  //save,load;
+    JMenuItem quit,rc,addPlayer,target,newG;  //save,load;
     JMenuItem rules, synopsis, specific, about;
 
     FillRBustGame.STATES gameSTATE = FillRBustGame.STATES.INIT;
@@ -259,14 +261,14 @@ class FillrBustGui extends JFrame{
 	   game = new JMenu("Game");                             //  ||      dice panel   | |               |
 	   target = new JMenuItem("Change Winning Score");     //  ||-------------------- |               |
 	   addPlayer = new JMenuItem("add player");            //  |      scores          |               |
-	   //save = new JMenuItem("save game");                     //  |      choices         |               |
-	   //load = new JMenuItem("load saved game");               //  |--------------------------------------|
-	   rc = new JMenuItem("write rc file");                //  |                                      |
-	   quit = new JMenuItem("quit");                       //  |           details                    |
+	   rc = new JMenuItem("write rc file");                //  |      choices         |               |
+	   newG = new JMenuItem("new game");                   //  |--------------------------------------|
+	   quit = new JMenuItem("quit");                       //  |                                      |
+	     game.add(target); game.add(addPlayer);                 //  |           details                    |
 	     game.add(target); game.add(addPlayer);                 //  |                                      |
-		 //game.add(save);                                      //  |______________________________________|
-	     //game.add(load);
+		 game.add(newG);                                        //  |______________________________________|
 	    target.setToolTipText("<html><p width=\"180\">"+goalHelp+"</html>");
+	    newG.setToolTipText("<html><p width=\"180\">"+newHelp+"</html>");
 		addPlayer.setToolTipText("<html><p width=\"180\">"+playerHelp+"</html>");
 		quit.setToolTipText("<html><p width=\"180\">"+quitHelp+"</html>");
 		 game.add(rc); game.add(quit);
@@ -405,6 +407,11 @@ class FillrBustGui extends JFrame{
 			    makeRCfile();
 		    }
 	    });
+	    newG.addActionListener(new ActionListener() {
+		    public void actionPerformed(ActionEvent fred) {
+			    newGame();
+		    }
+	    });
 	    target.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent fred) {
 			    getNewTarget();
@@ -478,8 +485,6 @@ class FillrBustGui extends JFrame{
 
     }
 
-
-
     public FillrBustGui() {
 	     String[] list = {"Clyde","Nancy"};
 	     int winner = 5000;
@@ -502,6 +507,20 @@ class FillrBustGui extends JFrame{
 	 addDetails(String.format("%s, it is your turn.\n Draw a card.\n",
 			 players.get(currentPlayer).getUName()));
     }
+
+	/**
+	 * Start new game with current parameters
+	 */
+	public void newGame() {
+		for (UserPanel each: players) {
+			each.reset();
+		}
+		myGame.resetGame();
+		card.setIcon(new ImageIcon(getClass().getResource(cardFolder+"title.gif")));
+		setDice();
+		details.setText("");
+		// TODO
+	}
 
     void setOptionA(String option) {
 	    optionA.setText(option);
@@ -636,6 +655,9 @@ class FillrBustGui extends JFrame{
 
 	public void setDice(String set, String mask){
 		diceP.setDice(set,mask);
+	}
+	public void setDice(){
+		diceP.setDice("","");
 	}
 
 	public void declareWinner(String name) {
