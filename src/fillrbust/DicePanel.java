@@ -30,13 +30,16 @@ class DicePanel extends JPanel{
     public DicePanel() {
 		this("images/");
     }
-    public DicePanel(String diceDir) {
+	public DicePanel(String diceDir) {
+		this(diceDir, false);
+    }
+    public DicePanel(String diceDir, boolean debug) {
 	  //setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 	  setLayout(new FlowLayout(FlowLayout.CENTER,0,2));
 	  setBackground(Color.BLACK);
-	  setBorder(BorderFactory.createLineBorder(Color.GREEN));
+	  if(debug)setBorder(BorderFactory.createLineBorder(Color.GREEN));
 	IMG_DIR = diceDir;
-	System.out.println(IMG_DIR);
+	if(debug)System.out.println(IMG_DIR);
 	dice =  new ArrayList<JToggleButton>();
 	ImageIcon dicImg = new ImageIcon(getClass().getResource(IMG_DIR+"undieb.gif"));
 	ImageIcon dicPImg = new ImageIcon(getClass().getResource(IMG_DIR+"undie.gif"));

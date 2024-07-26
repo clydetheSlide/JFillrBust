@@ -14,21 +14,37 @@ import java.util.*;
 //import java.io.BufferedReader;
 //import java.io.InputStreamReader;
 
-/* FillrBustGui
+
+/** FillrBustGui
  * Shows the state of the game by displaying graphical depictions of
- *     the players scores
- *     the card
- *     the dice
- *     the instructions to the user
+ * <ul>
+ * <li>    the players' scores
+ * <li>    the card
+ *  <li>   the dice
+ *  <li>   the choices
+ * <li>    the instructions to the user
+ * </ul>
  *  The state of the game is maintained by the game itself.
- *  So the action buttons, ie the card, the dice and the choice buttons
+ *  The action buttons, ie the card, the dice and the choice buttons
  *  just query the game for its state and update the graphical depictions.
  *  
  */
 
 class FillrBustGui extends JFrame{
 
-    String therules="see official rules from Bowman Games Inc: instr.pdf\n"+
+    private static String cmdHelp="\033[1mUsage\033[0m: java -jar <path_to_jar> \033[32m[-options]\033[0m\n"+
+"   where options are:\n"+
+"      \033[32m-p\033[0m playerName	    contestant name\n"+
+"                           There are expected to be two or more contestants.\n"+
+"                           Just repeat the argument for each. Prepend 'ai' to\n"+
+"                           make the player computer controlled.\n"+
+"      \033[32m-m\033[0m winningScore	    the score at which someone is delared the winner\n"+
+"      \033[32m-F\033[0m fontSize	    size of the font for the instruction box\n"+
+"      \033[32m-d\033[0m diceDir	    directory for dice images: Medium, Big, Orig\n"+
+"      \033[32m-c\033[0m cardDir	    directory for card images: Orig, Big, Huge\n"+
+"\n";
+
+    private static String therules="see official rules from Bowman Games Inc: instr.pdf\n"+
 "Fill'RBust uses six standard cubic dice and 54 cards (as described below)\n"+
 "It is turn based.\n\n"+
 "A 'fill' is when all six dice are scoreable (see dice scoring below).\n"+
@@ -89,7 +105,7 @@ class FillrBustGui extends JFrame{
 "  8- NO DICE cards\n"+
 "  2- DOUBLE TROUBLE cards";
 
-    String theGUI="The Graphical User Interface (GUI) has been developed to lead you through the game. "+
+    private static String theGUI="The Graphical User Interface (GUI) has been developed to lead you through the game. "+
 "On the left are the buttons that you use to play the game: the cards, the dice, "+
 "and two buttons to select an appropriate action when there is a decision to make. "+
 "On the right is the information to show you who is winning (and who is/are not).\n\n"+
@@ -114,7 +130,7 @@ class FillrBustGui extends JFrame{
 "A number (1-9) appended to the end of an aiName will indicate how much risk that ai player is willing to accept "+
 "when deciding to roll again, take vengeance, continue after a Fill, etc. A lower number assigns less risk.";
 
-    String diceHelp="             Dice:\n"+
+    private static String diceHelp="             Dice:\n"+
 "The dice are displayed and modeled as typical cubic dice.\n"+
 "Clicking any unrolled die will generate the first roll using all six dice. "+
 "Subsequent to the first roll, clicking will select and de-select the individual dice to be reserved for scoring. "+
@@ -122,38 +138,38 @@ class FillrBustGui extends JFrame{
 "Of the rolled dice, at least one must be reserved for scoring (it's a rule). "+
 "Dice that were reserved and not rolled are displayed on the right side of the fence.";
 
-    String cardHelp="             Card:\n"+
+    private static String cardHelp="             Card:\n"+
 "The cards are displayed and modeled as a shuffled Fill'RBust deck. "+
 "When it is appropriate to draw a card, clicking on the card will show the next card in the shuffled deck. "+
 "When all 54 cards have been exhausted, the deck is reshuffled.";
 
-    String optionHelp="           Option Buttons:\n"+
+    private static String optionHelp="           Option Buttons:\n"+
 "There are two option buttons because there are usually two options from which the player must choose. "+
 "The effect of clicking the option depends on the state of the game. "+
 "The button text describes the effect consisely. "+
 "The instruction box below them describe the decision a bit more. "+
 "Sometimes there is only one option, so one button is disabled.";
 
-    String goalHelp="You can change the score at which someone is called the winner\n"+
+    private static String goalHelp="You can change the score at which someone is called the winner\n"+
 "(and the rest are not).\n"+
 "At the end of the game, ie when someone's score exceeds the goal and the 'Winner' screen appears,\n"+
 "right clicking in it will allow you to change the goal. This allows for sore losers!";
 
-	String newHelp="Start a new game with the same players.";
+	private static String newHelp="Start a new game with the same players.";
 
-    String playerHelp="Any time during a game, another player can jump in - with zero score of course.\n\n"+
+    private static String playerHelp="Any time during a game, another player can jump in - with zero score of course.\n\n"+
 "Prepending 'ai' to a name makes that player computer controlled. "+
 "A number at the end of an ai player name indicates the risk that player will accept for decisions "+
 "such as whether to roll again, take vengeance, or continue after a FILL. Default value is 5. "+
 "Right click allows name change. ERROR ALERT: can't change player from real to AI.";
 
-    String quitHelp=" Duh! It quits; goes away; exits; beats a hasty retreat, makes like a tree and leaves, makes like a buffalo turd and hits the dusty trail.\n\n Which part of quit don't you understand?";
+    private static String quitHelp=" Duh! It quits; goes away; exits; beats a hasty retreat, makes like a tree and leaves, makes like a buffalo turd and hits the dusty trail.\n\n Which part of quit don't you understand?";
 
-    String helpHelp="Obviously you found that 'specific' help describes individual buttons.\n "+
+    private static String helpHelp="Obviously you found that 'specific' help describes individual buttons.\n "+
 "'Rules' describes the rules of the game.\n"+
 "'Synopsis' describes how the game is implemented with this Graphical User Interface";
 
-    String aboutHelp="FillRBust\n\n"
+    private static String aboutHelp="FillRBust\n\n"
 		    +"javax.swing, java.awt\n"
 		    +"Version 1.0  May 14, 2024\n"
 		    +"Clyde Gumbert, mizugana@gmail.com\n"
@@ -222,7 +238,7 @@ class FillrBustGui extends JFrame{
 	Dimension[] getDims(int numPlayers, String cardFolder, String diceFolder){
 		int widthU = numPlayers*110;
 		ImageIcon tem;
-		System.out.println("DiceDir: "+diceFolder);
+		if(config.debug)System.out.println("DiceDir: "+diceFolder);
 		tem= new ImageIcon(getClass().getResource(diceFolder+"one.gif"));
 		int widthD= 8* tem.getIconWidth();
 		//width += 500; // = 8*dicedir.one.gif.width
@@ -234,7 +250,7 @@ class FillrBustGui extends JFrame{
 		heightT = Math.max(heightT,300 /* UserPanel height*/);
 		int width = widthU + widthD;
 		int height=heightT + 300;
-		System.out.printf("widthD,HeightT, widthU,totH: %d %d %d %d%n",widthD,heightT,widthU,height);
+		if(config.debug)System.out.printf("widthD,HeightT, widthU,totH: %d %d %d %d%n",widthD,heightT,widthU,height);
 		//height=700; width=700;
 		return new Dimension[] {new Dimension(width,height),
 			                new Dimension(widthD,heightT)};
@@ -307,7 +323,7 @@ class FillrBustGui extends JFrame{
 		actions.setBounds(0,0,frameDims[1].width,frameDims[1].height);
 		int ypos = 0;
 		//actions.setLayout(new BoxLayout(actions,BoxLayout.Y_AXIS));
-		actions.setBorder(BorderFactory.createLineBorder(Color.RED));
+		if(config.debug)actions.setBorder(BorderFactory.createLineBorder(Color.RED));
 		actions.setBackground(Color.BLACK);
 	    //Image titleImg = Toolkit.getDefaultToolkit().getImage("title.gif");not
 	      ImageIcon imi =new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
@@ -319,12 +335,12 @@ class FillrBustGui extends JFrame{
 	    imi =new ImageIcon(getClass().getResource(config.diceDir+"one.gif"));
 	    diceP.setBounds(0,ypos,frameDims[1].width,imi.getIconHeight());
 	    ypos+=imi.getIconHeight();
-	    diceP.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+	    if(config.debug)diceP.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		diceP.setToolTipText("<html><p width=\"180\">"+diceHelp+"</html>");
 	    scores = new JPanel(new FlowLayout(FlowLayout.CENTER,20,2));
 	    scores.setBounds(80,ypos,400,25);
 		ypos+=30;
-	    scores.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+	    if(config.debug)scores.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 	    scores.setBackground(Color.BLACK);
 	    running = new JLabel("running score = none");
 		running.setForeground(Color.WHITE);
@@ -338,7 +354,7 @@ class FillrBustGui extends JFrame{
 	    choices.setBounds(200,ypos,100,95);
 	    choices.setBackground(Color.BLACK);
 		ypos+=125;
-	    choices.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+	    if(config.debug)choices.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 		choices.setToolTipText("<html><p width=\"180\">"+optionHelp+"</html>");
           optionA = new JButton("optionA");
           optionB = new JButton("optionB");
@@ -640,6 +656,11 @@ class FillrBustGui extends JFrame{
 		players.get(currentPlayer).newScore(score);
 	}
 
+	/**
+	 * set running and potential scores;
+	 * running score is the score of reserved dice and any previous cards' score;
+	 * potential is the chosen of the most recently rolled dice.
+	 */
 	public void setRunning(int running, int potential) {
 		this.running.setText(String.format("running score = %d",running));
 		this.potential.setText(String.format("potential score = %d",potential));
@@ -653,6 +674,12 @@ class FillrBustGui extends JFrame{
 		diceP.setSelected(mask);
 	}
 
+	/**
+	 * Given a string representing the dice,
+	 * set the graphical depiction.
+	 * The first part of the seven character string is the recently rolled dice;
+	 * any reserved dice are listed after a space-character.
+	 */
 	public void setDice(String set, String mask){
 		diceP.setDice(set,mask);
 	}
@@ -771,10 +798,15 @@ class FillrBustGui extends JFrame{
 		//int winner = 5000;
 		//boolean doGui = true;
 		boolean debug = false;
+		String argee;
 		if (args.length >0){
 			ArrayList<String> temp = new ArrayList<>();
 			for (int i=0; i<args.length;i++) {
-				if (args[i].equals("-D")) debug = true;
+				if (args[i].equals("-h")) {
+				    System.out.println("\n\n"+cmdHelp+"\n\n");
+				    System.exit(0);
+				}
+				if (args[i].equals("-D")) config.debug = true;
 				if (args[i].equals("-g")) doGui = false;
 				if (args[i].equals("-g")) config.gui = false;
 				else if (args[i].equals("-m")) {
@@ -784,6 +816,19 @@ class FillrBustGui extends JFrame{
 				 */
 				else if (args[i].equals("-p")) {
 					temp.add(args[i++ + 1]);
+				}
+				else if (args[i].equals("-F")) {
+					config.fontSize = Integer.parseInt(args[i++ +1]);
+				}
+				else if (args[i].equals("-d")) {
+					argee = args[i++ +1];
+					if (argee.contains("/"))config.diceDir = argee+"/";
+					else config.diceDir = "images/Dice/"+argee+"/";
+				}
+				else if (args[i].equals("-c")) {
+					argee = args[i++ +1];
+					if (argee.contains("/"))config.cardDir = argee+"/";
+					else config.cardDir = "images/Cards/"+argee+"/";
 				}
 			}
 			if (!temp.isEmpty()) list = temp.toArray(list);

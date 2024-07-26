@@ -20,6 +20,7 @@ public class FBConfig {
 	String diceDir;
 	int fontSize;
 	String configFile;
+	boolean debug;
 
 	public static String defaultFile() {
 		return ".fillrbustrc";
@@ -35,21 +36,26 @@ public class FBConfig {
 		fontSize = 14;
 		speak = false;
 		pov = false;
+		debug = false;
 	}
 
 	public FBConfig(String filename) {
+	    String lineA="Nothing read yet";
+	    String whereAmI="I don't know where I am";
 		ArrayList<String> temp = new ArrayList<>(3);
 		try {
 			Process process = Runtime.getRuntime().exec("pwd ");
 			String s;
 			int exitCode1 = process.waitFor();
-			System.out.println("Exit Code: " + exitCode1);
+			//System.out.println("Exit Code: " + exitCode1);
 			BufferedReader br = new BufferedReader(
 					new InputStreamReader(process.getInputStream()));
-			while ((s = br.readLine()) != null)
-				System.out.println("line: " + s);
+			while ((s = br.readLine()) != null){
+				//System.out.println("line: " + s);
+				whereAmI=s;
+			}
 			process.waitFor();
-			System.out.println("exit: " + process.exitValue());
+			//System.out.println("exit: " + process.exitValue());
 			process.destroy();
 		} catch (IOException | InterruptedException e) {
 			int fred = 4;
@@ -57,12 +63,12 @@ public class FBConfig {
 		defaults();
 		try {
 			File myObj = new File(filename);
-			System.out.println("Openned RC file:" + filename);
+			//System.out.println("Openned RC file:" + filename);
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
-				String lineA = myReader.nextLine();
-				String[] data = lineA.split(" ");
-				System.out.println(lineA);
+				lineA = myReader.nextLine();
+				String[] data = lineA.split(" ",2); // keyword, name -> name can contain spaces
+				//System.out.println(lineA);
 				switch (data[0]) {
 					case "WINNING_SCORE":
 						goal = Integer.parseInt(data[1]);
@@ -88,6 +94,9 @@ public class FBConfig {
 					case "SPEAK":
 						speak = data[1].equalsIgnoreCase("true");
 						break;
+					case "DEBUG":
+						debug = data[1].equalsIgnoreCase("true");
+						break;
 				}
 			}
 			myReader.close();
@@ -98,9 +107,13 @@ public class FBConfig {
 				players[ii]=temp.get(ii);
 			}
 		} catch (NullPointerException e) {
-			System.out.println("A NullPointererror occurred reading config; used defaults.");
+			System.out.println(String.format("A NullPointerError occurred reading config in %s; used defaults.",whereAmI));
+			System.out.println(whereAmI);
+			System.out.println(lineA);
+			System.out.println("A NullPointerError occurred reading config; used defaults.");
 		} catch (FileNotFoundException | ClassCastException e) {
-			System.out.println("An error occurred reading config; used defaults.");
+			System.out.println(String.format("An error occurred reading config in %s; used defaults.",whereAmI));
+			//System.out.println("An error occurred reading config; used defaults.");
 			//e.printStackTrace();
 		}
 	}
