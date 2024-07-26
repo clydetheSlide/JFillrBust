@@ -10,6 +10,7 @@ import java.util.Scanner; // Import the Scanner class to read text files
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+/** Read/write a configuration file for FillRBust. */
 public class FBConfig {
 	int goal;
 	String[] players;       // player name including preceding ai and risk
@@ -61,6 +62,13 @@ public class FBConfig {
 			int fred = 4;
 		}
 		defaults();
+		readFile(filename);
+	}
+
+	public void readFile(String filename){
+	    String lineA="Nothing read yet";
+	    String whereAmI="I don't know where I am";
+		ArrayList<String> temp = new ArrayList<>(3);
 		try {
 			File myObj = new File(filename);
 			//System.out.println("Openned RC file:" + filename);

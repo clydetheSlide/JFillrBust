@@ -830,6 +830,11 @@ class FillrBustGui extends JFrame{
 					if (argee.contains("/"))config.cardDir = argee+"/";
 					else config.cardDir = "images/Cards/"+argee+"/";
 				}
+				else if (args[i].equals("-C")) {
+					argee = args[i++ +1];
+					config.readFile(argee);
+				}
+
 			}
 			if (!temp.isEmpty()) list = temp.toArray(list);
 			if (!temp.isEmpty()) config.players = temp.toArray(list);
