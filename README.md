@@ -25,8 +25,11 @@ Rules of the game and instructions on how to use the graphical user interface to
 
 Your name probably is not Myself and you may even want to name your opponent something
 other than aiFoe. And you may want to play to 10000 points.
+And you may prefer the vertical layout.
 Command line parameters are available to control that,
-> <prompt\> java -jar <path_to_jar> -p YourName -p aiOpponent -m 10000
+> <prompt\> java -jar <path_to_jar> -p YourName -p aiOpponent -m 10000 -V
+
+![game screen 4](README_dir/layoutV.gif)
 
 Any number of players, interactive or computer driven, can be declared.
 The same information and more is read from a config file.

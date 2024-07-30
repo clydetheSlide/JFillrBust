@@ -1,24 +1,24 @@
-/*
- * Play the game FillRBust
- *   . maintains the state of the game:
- *       players,
- *       dice,
- *       card,
- *       game state,
- *
- *  . enacts the rules
- *  . reports back to the GUI
- *   (which actually drives the game)
- */
 package fillrbust;
 
 import java.util.*;
 
 import static java.lang.Thread.sleep;
 
+/** Play the game FillRBust.
+ *   <ul>
+ *   <li> maintains the state of the game:
+ *       players,
+ *       dice,
+ *       card,
+ *       game state,
+ *
+ *  <li> enacts the rules
+ *  <li> reports back to the GUI
+ *   (which actually drives the game)
+ */
 class FillRBustGame {
 
-	static final String EMPTY_BUTTON = "        ";
+	private static final String EMPTY_BUTTON = "        ";
 
 	public enum STATES {
 		INIT, NEXTPLAYER    //
@@ -33,27 +33,27 @@ class FillRBustGame {
 		, BUSTED, ROLLSOME, DOUBLETROUBLE, WINNER
 	}
 
-	Cards deck = new Cards();
-	Cards.Name cardType;
-	int bonus;
-	Dice dice;
-	FillrBustGui gui;
-	STATES state = STATES.INIT;
-	HashMap<String, Player> players;
-	int runningScore, tempScore;
-	Player player;
-	String[] playerList;
-	int currentPlayer;
-	boolean vengeance = false;
-	boolean mustbust = false;
-	boolean mustfill = false;   // used with vengeance and doubletrouble
-	int doubletrouble = 0;
-	int max_score;
-	int high_score = 0;
-	String highScorer = "";
-	boolean aiResponder = false;
-	boolean debug = false; //true;
-	int nupdate;
+	private Cards deck = new Cards();
+	private Cards.Name cardType;
+	private int bonus;
+	private Dice dice;
+	private FillrBustGui gui;
+	private STATES state = STATES.INIT;
+	private HashMap<String, Player> players;
+	private int runningScore, tempScore;
+	private Player player;
+	private String[] playerList;
+	private int currentPlayer;
+	private boolean vengeance = false;
+	private boolean mustbust = false;
+	private boolean mustfill = false;   // used with vengeance and doubletrouble
+	private int doubletrouble = 0;
+	private int max_score;
+	private int high_score = 0;
+	private String highScorer = "";
+	private boolean aiResponder = false;
+	private boolean debug = false; //true;
+	private int nupdate;
 
 	public FillRBustGame(String[] plist, int max) {
 		this.max_score = max;
@@ -269,6 +269,8 @@ class FillRBustGame {
 					} else if (vengeance) {
 						players.get(highScorer).update(-2500);
 						player.update(score);
+						gui.addScore(highScorer, -2500);
+						gui.addScore(score);
 						int newScore = players.get(highScorer).getScore();
 						gui.updateScore(highScorer, newScore);
 						gui.addDetails(String.format(
@@ -641,6 +643,8 @@ class FillRBustGame {
 						players.get(highScorer).update(-2500);
 						player.update(score);
 						int newScore = players.get(highScorer).getScore();
+						gui.addScore(highScorer, -2500);
+						gui.addScore(score);
 						gui.updateScore(highScorer, newScore);
 						gui.addDetails(String.format(
 								" And %s is dropped to %d points.\n", highScorer, newScore));
@@ -804,7 +808,7 @@ class FillRBustGame {
 	}
 	public int getMaxScore() {return max_score;}
 
-	void announceWinner () {
+	private void announceWinner () {
 		gui.addDetails(String.format(" !! %s won !!", player.getName()));
 		gui.declareWinner(player.getName());
 		state = STATES.WINNER;
@@ -813,7 +817,7 @@ class FillRBustGame {
 	 * check which player has the highest score.
 	 * update globals highScorer and high_score
 	 */
-	void updateHighScorer() {
+	private void updateHighScorer() {
 		String newHiOne = "";
 		int newHi = 0;
 		for (String each : players.keySet()) {
@@ -855,7 +859,7 @@ class FillRBustGame {
 		return (player instanceof AIPlayer);
 	}
 
-	Random randy = new Random(new Date().getTime());
+	private Random randy = new Random(new Date().getTime());
 
 	/**
 	 * determine the response for a situation
@@ -866,7 +870,7 @@ class FillRBustGame {
 	    AIPlayer p = (AIPlayer) this.player;
 	    return aiResponse(p,1200);
 	}
-	static final int RISK_RANGE = 16;
+	private static final int RISK_RANGE = 16;
 	public String aiResponse(Player p){
 	    return aiResponse(p,1200);
 	}
@@ -926,7 +930,7 @@ class FillRBustGame {
 	 *   the proximity of the player to the leading player
 	 *   the number of dice left to roll
 	 */
-	int probOffset() {
+	private int probOffset() {
 	    int proboff=0;
 	    if (tempScore < 200) {
 		    if(debug)System.out.println(tempScore+" is a dinky roll; take more risk");
@@ -968,7 +972,7 @@ class FillRBustGame {
 	 *   the proximity of the player to the leading player
 	 *   the number of dice left to roll
 	 */
-	int probOffsetCV() {
+	private int probOffsetCV() {
 		int proboff=0;
 		if (max_score - player.getScore()-runningScore <1000){
 			if(debug)System.out.println(player.getScore()+" is close to winning; take less risk");
@@ -1000,7 +1004,7 @@ class FillRBustGame {
 	/**
 	 * play the game automatically
 	 */
-	void aiInterface() {
+	public void aiInterface() {
 		String stuff;
 		//while
 		if
@@ -1031,7 +1035,7 @@ class FillRBustGame {
 
 	}
 
-	void textInterface() {
+	public void textInterface() {
 		boolean notdone = true;
 		Scanner sc=null;
 		if (!aiResponder) {
@@ -1064,7 +1068,7 @@ class FillRBustGame {
 
 	}
 
-	void tupdate(String s) {
+	private void tupdate(String s) {
 	    System.out.println(s);
 	}
 
@@ -1101,7 +1105,7 @@ class FillRBustGame {
 		runningScore = rs;
 	}
 
-	void stealthtextInterface() {
+	private void stealthtextInterface() {
 		boolean notdone = true;
 		Scanner sc=null;
 		if (!aiResponder) {

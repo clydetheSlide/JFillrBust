@@ -1,8 +1,8 @@
+package fillrbust;
+
 /** Player defined by age, score,
   and 'artificial-ness'
 */
-package fillrbust;
-
 class Player{
     private String name;
     private int score;

@@ -2,6 +2,7 @@ package fillrbust;
 
 import java.util.*;
 
+/** Set of six standard cubic dice with a number on each side*/
 class Dice {
 	static class Scoreable {
 		String group;
@@ -25,7 +26,7 @@ class Dice {
 		}
 	}
 
-	Scoreable[] scores = {
+	private Scoreable[] scores = {
 			new Scoreable("111", 1000)
 			, new Scoreable("123456", 1500)
 			, new Scoreable("1", 100)
@@ -36,13 +37,13 @@ class Dice {
 			, new Scoreable("5", 50)
 			, new Scoreable("666", 600)
 	};
-	int score;
-	String reserved;
-	String rollable;
-	String used;
-	String selectedD = "not";
-	char[] mask;
-	Random randy = new Random(new Date().getTime());
+	private int score;
+	private String reserved;
+	private String rollable;
+	private String used;
+	private String selectedD = "not";
+	private char[] mask;
+	private Random randy = new Random(new Date().getTime());
 
 	/**
 	 * Initialize a set of six dice.
@@ -84,7 +85,7 @@ class Dice {
 	 *
 	 * @return the String of numbers
 	 */
-	String roll() {
+	private String roll() {
 		int num = 6 - reserved.length();
 		//dice=sorted([random.randint(1,6) for ii in range(num)])
 		ArrayList<Integer> dice = new ArrayList<Integer>();
@@ -93,7 +94,7 @@ class Dice {
 		selectedD="not";
 		return list2str(dice);
 	}
-	String roll(String testRoll){
+	private String roll(String testRoll){
 		int num = 6 - reserved.length();
 		ArrayList<Integer> dice = new ArrayList<Integer>();
 		for (int i = 0; i < num; i++) {
@@ -107,7 +108,7 @@ class Dice {
 	/**
 	 * convert list of integers to a String
 	 */
-	String list2str(ArrayList<Integer> set) {
+	private String list2str(ArrayList<Integer> set) {
 		char[] cars;
 		cars = new char[set.size()];
 		for (int i = 0; i < set.size(); i++) cars[i] = (char) (set.get(i) + 49);
@@ -122,18 +123,18 @@ class Dice {
 		return rollable;
 	}
 
-	int scoreIt(String rolled, String mask) {
+	private int scoreIt(String rolled, String mask) {
 		String keepIt = "";
 		for (int i = 0; i < rolled.length(); i++)
 			if (i<mask.length() && mask.charAt(i) == '1') keepIt = keepIt + rolled.charAt(i);
 		return scoreIt(keepIt, false);
 	}
 
-	int scoreIt(String rolled) {
+	private int scoreIt(String rolled) {
 		return scoreIt(rolled, true);
 	}
 
-	int scoreIt(String rolled, boolean makeMask) {
+	private int scoreIt(String rolled, boolean makeMask) {
 		// look for scoreable combinations in the set of dice
 		int p = 0;
 		int score = 0;

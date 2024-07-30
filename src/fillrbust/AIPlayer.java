@@ -8,10 +8,10 @@ import java.util.Map;
    to make choices based of an assignment of risk
 */
 class AIPlayer extends Player {
-    int risker = 5;
-    int score = 0;
-    boolean isai;
-    Random rg = new Random();
+    private int risker = 5;
+    private int score = 0;
+    private boolean isai;
+    private Random rg = new Random();
 
     public AIPlayer(String name, int risker) {
     	super(name, 0);
@@ -125,7 +125,7 @@ class AIPlayer extends Player {
     /** triangular probabilistic distribution
      *
      */
-    double probTri(int min, int max, int mid) {
+    private double probTri(int min, int max, int mid) {
 	double x = rg.nextDouble()*(max-min) +(double)min;
 	if (x<min) return 0.;
 	if (x<mid) return (x-min)*(x-min)/(mid-min) +min;

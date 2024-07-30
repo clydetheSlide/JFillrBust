@@ -1,8 +1,9 @@
 package fillrbust;
 import java.util.*;
 
+/** A deck of 54 FillRBust cards shuffled randomly */
 class Cards{
-    ArrayList <Integer> deck;
+    private ArrayList <Integer> deck;
     /** make a deck of 54 FillRBust cards shuffled randomly */
     public Cards(){
             deck=shuffle();
@@ -69,7 +70,7 @@ class Cards{
 	return "Double Trouble";
     }
     */
-    static Name ctype(int id){
+    private static Name ctype(int id){
 	if (id<12) return Name.BONUS_300;
 	if (id<22) return Name.BONUS_400;
 	if (id<30) return Name.BONUS_500;

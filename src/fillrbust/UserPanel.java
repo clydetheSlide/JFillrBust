@@ -1,11 +1,3 @@
-/*
- * display the user name, the history of scores, the total score.
- * Provide methods to change:
- *    the color of the name - to indicate it is this player's turn
- *    the total score
- *    add a score change
- * Provide method to interact with the parent panel
- */
 package fillrbust;
 
 import javax.swing.*;
@@ -14,6 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.Dimension;
 import java.awt.Color;
 
+/** Display the user name, the history of scores, the total score.
+ * Provide methods to change:
+ *    the color of the name - to indicate it is this player's turn
+ *    the total score
+ *    add a score change
+ * Provide method to interact with the parent panel
+ */
 class UserPanel extends JPanel {
     JButton name;
     JLabel scoreToDate;
@@ -30,12 +29,13 @@ class UserPanel extends JPanel {
     }
     /* for initial development of layout dont bind to a player */
     UserPanel(String uname, int index) {
-	setPreferredSize(new Dimension(110,300));
+	//setPreferredSize(new Dimension(110,300));
+	setPreferredSize(new Dimension(110,240));
 	if (uname.indexOf("ai")==0){
 		//System.out.println(uname+" is ai");
 		int es = uname.length();
 		char aa =uname.charAt(es-1);
-		System.out.println(aa);
+		//System.out.println(aa);
 		 if (Character.isDigit(aa))
 		 {
 			 es -=1;
