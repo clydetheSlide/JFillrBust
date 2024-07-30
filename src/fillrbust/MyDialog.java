@@ -8,7 +8,7 @@ class MyDialog extends JDialog
 	      // implements ActionListener
 	      //,PropertyChangeListener
 {
-    JTextArea textarea;
+    private JTextArea textarea;
 	public MyDialog(Frame aFrame, String words) {
 		this(aFrame,words,"Help Box");
 	}

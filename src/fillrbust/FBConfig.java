@@ -20,6 +20,7 @@ public class FBConfig {
 	String cardDir;
 	String diceDir;
 	int fontSize;
+	DicePanel_V.LayoutOrientation layout;
 	String configFile;
 	boolean debug;
 
@@ -37,13 +38,14 @@ public class FBConfig {
 		fontSize = 14;
 		speak = false;
 		pov = false;
+		layout = DicePanel_V.LayoutOrientation.VERTICAL;
 		debug = false;
 	}
 
 	public FBConfig(String filename) {
-	    String lineA="Nothing read yet";
+	    //String lineA="Nothing read yet";
 	    String whereAmI="I don't know where I am";
-		ArrayList<String> temp = new ArrayList<>(3);
+		//ArrayList<String> temp = new ArrayList<>(3);
 		try {
 			Process process = Runtime.getRuntime().exec("pwd ");
 			String s;
@@ -96,6 +98,11 @@ public class FBConfig {
 					case "FONT_SIZE":
 						fontSize = Integer.parseInt(data[1]);
 						break;
+					case "LAYOUT":
+						layout = (data[1].equalsIgnoreCase("vertical"))?
+						    DicePanel_V.LayoutOrientation.HORIZONTAL:
+						    DicePanel_V.LayoutOrientation.VERTICAL;
+						break;
 					case "POV":
 						pov = data[1].equalsIgnoreCase("true");
 						break;
@@ -142,6 +149,9 @@ public class FBConfig {
 				myWriter.write(String.format("CARDS_DIR %s\n", cardDir));
 				myWriter.write(String.format("DICE_DIR %s\n", diceDir));
 				myWriter.write(String.format("GUI %s\n", gui ? "true" : "false"));
+				myWriter.write(String.format("LAYOUT %s\n", 
+					    (layout==DicePanel_V.LayoutOrientation.VERTICAL) ?
+					      "HORIZONTAL" : "VERTICAL"));
 				myWriter.write(String.format("FONT_SIZE %d\n", fontSize));
 				myWriter.write(String.format("POV %s\n", pov ? "true" : "false"));
 				myWriter.write(String.format("SPEAK %s\n", speak ? "true" : "false"));

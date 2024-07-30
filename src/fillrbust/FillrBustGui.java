@@ -8,11 +8,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 //import java.io.IOException;
 //import java.io.InputStream;
 import java.util.*;
-//import java.io.BufferedReader;
-//import java.io.InputStreamReader;
 
 
 /** FillrBustGui
@@ -171,7 +171,7 @@ class FillrBustGui extends JFrame{
 
     private static String aboutHelp="FillRBust\n\n"
 		    +"javax.swing, java.awt\n"
-		    +"Version 1.0  May 14, 2024\n"
+		    +"Version 2.0  July 24, 2024\n"
 		    +"Clyde Gumbert, mizugana@gmail.com\n"
 		    +"I had fun and learned some stuff building it.\n"
 		    +"If you recognize areas of improvement,\n"
@@ -181,108 +181,54 @@ class FillrBustGui extends JFrame{
 		    +"labor like me. "
 		    ;
 
-	JFrame frame;
-    JPanel top;
-    JScrollPane detailsP;
-    JTextArea details;
-    JPanel data;
-    JPanel users;
-    JPanel actions;
-    DicePanel diceP;
-    JPanel scores;
-    JPanel choices;
-    JMenuBar mbar;
-    JMenu game;
-    JMenu help;
-    Dimension[] frameDims;
+	private FillRBustGame.STATES gameSTATE = FillRBustGame.STATES.INIT;
+	private FillRBustGame myGame;
+	private static int UPDATE_PERIOD = 100; //milliseconds
+	private static String cardFolder = "images/";
 
-    ArrayList<UserPanel> players;
-	int currentPlayer;
-    JButton winningScore;
-    ArrayList<JToggleButton> dice;
-    JLabel running, potential;
-    JButton optionA, optionB, card;
-    JMenuItem quit,rc,addPlayer,target,newG;  //save,load;
-    JMenuItem rules, synopsis, specific, about;
-
-    FillRBustGame.STATES gameSTATE = FillRBustGame.STATES.INIT;
-    FillRBustGame myGame;
-	int UPDATE_PERIOD = 100; //milliseconds
-	static String cardFolder = "images/";
-
-    void buildDataGui(JPanel master, String[] playerNames, int targetScore)
-    {
-		master.setLayout(new BoxLayout(master,BoxLayout.Y_AXIS));
-		winningScore = new JButton(String.format("%d",targetScore));
-		users = new JPanel();
-		users.setLayout(new BoxLayout(users,BoxLayout.X_AXIS));
-		players = new ArrayList<>();
-		for (String each: playerNames){
-			UserPanel entry = new UserPanel(each, players.size());
-			players.add(entry);
-			users.add(entry);
-		}
-		master.add(winningScore);
-		master.add(users);
-    }
-
-	/**
-	 * Use components to determine size of the GUI areas
-	 * @param numPlayers
-	 * @param cardFolder
-	 * @param diceFolder
-	 * @return array of dimensions:<br>
-	 *                           0-> total<br>
-	 *                           1-> actions
-	 */
-	Dimension[] getDims(int numPlayers, String cardFolder, String diceFolder){
-		int widthU = numPlayers*110;
-		ImageIcon tem;
-		if(config.debug)System.out.println("DiceDir: "+diceFolder);
-		tem= new ImageIcon(getClass().getResource(diceFolder+"one.gif"));
-		int widthD= 8* tem.getIconWidth();
-		//width += 500; // = 8*dicedir.one.gif.width
-		int heightT = tem.getIconHeight();
-		tem= new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
-		//int height = max((card.height+ dice.height + more), userpanel.height)
-		//                  + fontsize*nrows/10;
-		heightT += tem.getIconHeight() +120;
-		heightT = Math.max(heightT,300 /* UserPanel height*/);
-		int width = widthU + widthD;
-		int height=heightT + 300;
-		if(config.debug)System.out.printf("widthD,HeightT, widthU,totH: %d %d %d %d%n",widthD,heightT,widthU,height);
-		//height=700; width=700;
-		return new Dimension[] {new Dimension(width,height),
-			                new Dimension(widthD,heightT)};
-	}
-
-	public FillrBustGui(String[] names, int targetScore) {
-		//this(names, targetScore);
-    }
-
-	//public FillrBustGui(String[] names, int targetScore)
-	public FillrBustGui(FBConfig config)
-    {
+	private JMenuBar mbar;
+	private JMenu game;
+	private JMenu help;
+	private JMenuItem quit,rc,addPlayer,target,newG;  //save,load;
+	private JMenuItem rules, synopsis, specific, about;
+	private Dimension[] frameDims;
+	private JPanel choices;
+	private JPanel rightBottom;	
+	private JPanel users;
+	private ArrayList<JToggleButton> dice;
+	private JScrollPane detailsP;
+	private int nlines = 1;
+	private JTextArea details;
+	private DicePanel_V diceP;
+	private ReservedDice_V diceR;
+	private ArrayList<UserPanel> players = new ArrayList<UserPanel>(4);
+	private int currentPlayer;
+	private JLabel winningScore;
+	private JButton card;
+	private JButton optionA;
+	private JButton optionB;
+	private FBConfig config;
+	private boolean vertOrient = true;
+	                                       
+	public FillrBustGui(FBConfig config) {
 	   this.config = config;
-	   //myGame = new FillRBustGame(names, targetScore);
 	   myGame = new FillRBustGame(config.players, config.goal);
-	   //System.out.print("FillrBustGui built myGame");
 	   frameDims = getDims(config.players.length, config.cardDir, config.diceDir);
 	   cardFolder = config.cardDir;
-         frame = new JFrame("Play FillRBust");
-         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  //  _______________________________________
-		 //frame.setSize(700,700);                              //  |        Card          |               |
-         frame.setSize(frameDims[0].width, frameDims[0].height);//  |                      |               |
-	   mbar = new JMenuBar();                                   //  |____________________  |   UserPanel   |
-	   game = new JMenu("Game");                             //  ||      dice panel   | |               |
-	   target = new JMenuItem("Change Winning Score");     //  ||-------------------- |               |
-	   addPlayer = new JMenuItem("add player");            //  |      scores          |               |
-	   rc = new JMenuItem("write rc file");                //  |      choices         |               |
-	   newG = new JMenuItem("new game");                   //  |--------------------------------------|
-	   quit = new JMenuItem("quit");                       //  |                                      |
-	     game.add(target); game.add(addPlayer);                 //  |           details                    |
-	     game.add(target); game.add(addPlayer);                 //  |                                      |
-		 game.add(newG);                                        //  |______________________________________|
+	    setTitle("Play FillRBust");
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    setBackground(Color.BLACK);
+	    setForeground(Color.BLACK);
+	   mbar = new JMenuBar();
+	   game = new JMenu("Game");
+	   target = new JMenuItem("Change Winning Score");
+	   addPlayer = new JMenuItem("add player");
+	   rc = new JMenuItem("write rc file");
+	   newG = new JMenuItem("new game");
+	   quit = new JMenuItem("quit");
+	     game.add(target); game.add(addPlayer);
+	     game.add(target); game.add(addPlayer);
+		 game.add(newG);
 	    target.setToolTipText("<html><p width=\"180\">"+goalHelp+"</html>");
 	    newG.setToolTipText("<html><p width=\"180\">"+newHelp+"</html>");
 		addPlayer.setToolTipText("<html><p width=\"180\">"+playerHelp+"</html>");
@@ -297,95 +243,221 @@ class FillrBustGui extends JFrame{
 	     help.add(rules); help.add(synopsis); help.add(specific); help.add(about);
 	   mbar.add(game);
 	   mbar.add(help);
-	   frame.setJMenuBar(mbar);
-	    // top: w=700, h=250
-           top = new JPanel();
-		top.setBounds(0,0,frameDims[0].width,frameDims[1].height);
+	   setJMenuBar(mbar);
 
-	   details = new JTextArea(150,12);
-	   //details.setFont(new Font("Helvetica",Font.PLAIN, config.fontSize));
-	   // details.setFont(new Font("Living by Numbers",Font.PLAIN, config.fontSize));
-	   //details.setFont(new Font("Karma Suture",Font.PLAIN, config.fontSize));
-	   details.setFont(new Font("Ænigma Scrawl 4 BRK",Font.PLAIN, config.fontSize));
-	   details.setEditable(false);
-	   detailsP = new JScrollPane(details);
-		detailsP.setBounds(0,frameDims[1].height,
-					frameDims[0].width,frameDims[0].height-frameDims[1].height);
-		details.append("Follow these instructions:\n");
-
-	   data = new JPanel();
-		data.setBounds(frameDims[1].width,0,
-				frameDims[0].width-frameDims[1].width, frameDims[1].height);
-	    //buildDataGui(data, names, targetScore);
-	   buildDataGui(data, config.players, config.goal);
-
-	   actions = new JPanel();
-		actions.setBounds(0,0,frameDims[1].width,frameDims[1].height);
-		int ypos = 0;
-		//actions.setLayout(new BoxLayout(actions,BoxLayout.Y_AXIS));
-		if(config.debug)actions.setBorder(BorderFactory.createLineBorder(Color.RED));
-		actions.setBackground(Color.BLACK);
-	    //Image titleImg = Toolkit.getDefaultToolkit().getImage("title.gif");not
-	      ImageIcon imi =new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
-          card = new JButton(imi);
-	    card.setBounds(200,ypos, imi.getIconWidth(), imi.getIconHeight());  // TODO geom based on image size
-		card.setToolTipText("<html><p width=\"180\">"+cardHelp+"</html>");
-		ypos+=imi.getIconHeight();
-	    diceP=new DicePanel(config.diceDir);
-	    imi =new ImageIcon(getClass().getResource(config.diceDir+"one.gif"));
-	    diceP.setBounds(0,ypos,frameDims[1].width,imi.getIconHeight());
-	    ypos+=imi.getIconHeight();
-	    if(config.debug)diceP.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+	    diceP = new DicePanel_V(config.diceDir, config.layout);
 		diceP.setToolTipText("<html><p width=\"180\">"+diceHelp+"</html>");
-	    scores = new JPanel(new FlowLayout(FlowLayout.CENTER,20,2));
-	    scores.setBounds(80,ypos,400,25);
-		ypos+=30;
-	    if(config.debug)scores.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-	    scores.setBackground(Color.BLACK);
-	    running = new JLabel("running score = none");
-		running.setForeground(Color.WHITE);
-	    potential = new JLabel("potential score =     0");
-	    potential.setForeground(Color.WHITE);
-	    scores.add(potential);
-	    scores.add(running);
+	    diceR = new ReservedDice_V(config.diceDir, config.layout);
+	    // opts
 	    choices = new JPanel();
-	    //choices.setLayout(new BoxLayout(choices,BoxLayout.Y_AXIS));
-	    choices.setLayout(new FlowLayout(FlowLayout.CENTER));
-	    choices.setBounds(200,ypos,100,95);
+	    //choices.setLayout(new FlowLayout(FlowLayout.CENTER));
+	    choices.setLayout(new BoxLayout(choices,BoxLayout.Y_AXIS));
 	    choices.setBackground(Color.BLACK);
-		ypos+=125;
-	    if(config.debug)choices.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+	    if(config.debug)choices.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 		choices.setToolTipText("<html><p width=\"180\">"+optionHelp+"</html>");
-          optionA = new JButton("optionA");
-          optionB = new JButton("optionB");
-	    //actions2.setBounds(300,270,100,30);
+	    optionA = new JButton("optionA");
+	    optionB = new JButton("optionB");
 	    choices.add(optionA);
 	    choices.add(optionB);
-          actions.add(card);
-          actions.add(diceP);
-          actions.add(scores);
-          actions.add(choices);
+	    ImageIcon imi =new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
+	    JPanel cPan = new JPanel();
+	    cPan.setBackground(Color.BLACK);
+            card = new JButton(imi);
+	    card.setPreferredSize(new Dimension(imi.getIconWidth(),imi.getIconHeight()));
+	    cPan.add(card);
+	    // user date to the side
+	    users = new JPanel();
+	    users.setLayout(new GridBagLayout());
+	       GridBagConstraints uGB = new GridBagConstraints();
+	    winningScore = new JLabel(String.format("%d",config.goal));
+	    uGB.gridx     =0;
+	    uGB.gridy     =0;
+	    uGB.gridwidth =config.players.length;
+	    users.add(winningScore, uGB);
+	    uGB.gridy     =1;
+	    uGB.gridwidth =1;
+	    uGB.gridx     =0;
+		for (String each: config.players){
+			UserPanel entry = new UserPanel(each, players.size());
+			//UserPanel entry = new UserPanel(each);
+			players.add(entry);
+			users.add(entry, uGB);
+			uGB.gridx+=1;
+		}
+	    if(config.debug)users.setBorder(BorderFactory.createLineBorder(Color.RED));
+	    // instructions
+	    details = new JTextArea(8,30);
+	    details.setFont(new Font("Ænigma Scrawl 4 BRK",Font.PLAIN, config.fontSize/*15*/));
+	    details.setEditable(false);
+	    detailsP = new JScrollPane(details);
+	    //detailsP.setBounds(0,frameDims[1].height,
+	    //		      frameDims[0].width,frameDims[0].height-frameDims[1].height);
+	    //		    123456789012345678901234567890
+	    details.append("Follow these instructions:\n");
+	    //details.append("Follow");
+	    if(config.debug)detailsP.setBorder(BorderFactory.createLineBorder(Color.RED));
+                                                
+	    // layout dice vertically
+	    setLayout(new GridBagLayout());
+	    GridBagConstraints gbC = new GridBagConstraints();
+	    if (config.layout == DicePanel_V.LayoutOrientation.VERTICAL){
+	    // opts
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.gridx =0;
+	    gbC.gridy =0;
+	    gbC.gridheight=1;
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.anchor = GridBagConstraints.PAGE_START;
+	    add(choices, gbC);
+	    // card
+	    gbC.gridx =0;
+	    gbC.gridy =1;
+	    gbC.fill = GridBagConstraints.NONE;
+	    //gbC.anchor = GridBagConstraints.CENTER;
+	    gbC.anchor = GridBagConstraints.NORTH;
+	    gbC.gridheight=1;
+	    add(cPan, gbC);
 
-	    top.add(actions);
-	    top.add(data);
+	    // dice panels
+	    gbC.gridx =1;
+	    gbC.gridy =0;
+	    gbC.gridheight=1;
+	    gbC.anchor = GridBagConstraints.EAST;
+	    gbC.fill = GridBagConstraints.VERTICAL;
+	    add(diceP, gbC);
+	    gbC.gridx =2;
+	    gbC.gridy =0;
+	    gbC.anchor = GridBagConstraints.WEST;
+	    add(diceR, gbC);
 
-	    frame.getContentPane().add(top);
-	    frame.getContentPane().add(detailsP);
-	    //System.out.print("FillrBustGui built GUI PARTS");
+	    // user data to the side
+	    gbC.gridx =3;
+	    gbC.gridy =0;
+	    gbC.gridheight=2;
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.weighty = 0.;
+	    gbC.weightx = 1.;
+	    add(users, gbC);
 
+	    // instructions
+	    gbC.weightx = 0.;
+	    gbC.weighty = 1.;
+	    gbC.gridx =1;
+	    gbC.gridy =1;
+	    gbC.gridheight=1;
+	    gbC.gridwidth=2;
+	    //gbC.fill = GridBagConstraints.HORIZONTAL;
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.anchor = GridBagConstraints.NORTH;
+	    add(detailsP,gbC);
+	    }else{
+	    gbC.gridx =0;
+	    gbC.gridy =0;
+	    gbC.gridheight=3;
+	    gbC.anchor = GridBagConstraints.SOUTH;
+	    gbC.fill = GridBagConstraints.HORIZONTAL;
+	    add(diceP, gbC);
+	    gbC.gridx =0;
+	    gbC.gridy =3;
+	    //gbC.gridheight=3;
+	    gbC.gridheight=2;
+	    gbC.anchor = GridBagConstraints.NORTH;
+	    add(diceR, gbC);
+
+	    // opts
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.gridx =1;
+	    gbC.gridy =0;
+	    gbC.gridheight=1;
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.anchor = GridBagConstraints.PAGE_START;
+	    add(choices, gbC);
+
+	    gbC.gridx =1;
+	    gbC.gridy =1;
+	    gbC.fill = GridBagConstraints.NONE;
+	    //gbC.anchor = GridBagConstraints.CENTER;
+	    gbC.anchor = GridBagConstraints.SOUTH;
+	    gbC.gridheight=3;
+	    add(cPan, gbC);
+
+	    Dimension dimP = diceP.getPSize();
+	    Dimension dimR = diceR.getPSize();
+
+	    // user date to the side
+	    gbC.gridx =2;
+	    gbC.gridy =0;
+	    gbC.gridheight=4;
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.weighty = 0.;
+	    gbC.weightx = 1.;
+	    add(users, gbC);
+
+	    // instructions
+	    gbC.weightx = 1.;
+	    gbC.weighty = 1.;
+	    gbC.gridx =1;
+	    gbC.gridy =4;
+	    gbC.gridheight=1;
+	    gbC.gridwidth=2;
+	    //gbC.fill = GridBagConstraints.HORIZONTAL;
+	    gbC.fill = GridBagConstraints.BOTH;
+	    gbC.anchor = GridBagConstraints.NORTH;
+	    add(detailsP,gbC);
+	    }
+	    
+	    Dimension dimP = diceP.getPSize();
+	    Dimension dimR = diceR.getPSize();
+
+	    if (config.layout == DicePanel_V.LayoutOrientation.VERTICAL){
+	    setSize((int)(dimR.getWidth()*1.5+dimP.getWidth()*1.5) + imi.getIconWidth() +2*50,  // nusers
+		    (int)dimP.getHeight()+21*10);   // fontsize*nlines
+	    }else{
+	    setSize((int)(dimR.getWidth()*1.7) + 250,
+		    (int)dimP.getHeight()+(int)dimR.getHeight()+100);
+	    }
+
+	    // bind actions
+	    // game menu
 	    quit.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent fred) {
                     System.exit(1);
                 }
 	    });
+	    // help menu
+	    JFrame frame = this;
+	    rules.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent fred) {
+                    MyDialog showHelp = new MyDialog(frame, therules);
+		    showHelp.pack();
+		    showHelp.setVisible(true);
+                }
+	    });
+	    synopsis.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent fred) {
+                    MyDialog showHelp = new MyDialog(frame, theGUI);
+		    showHelp.pack();
+		    showHelp.setVisible(true);
+                }
+	    });
+	    about.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent fred) {
+                    MyDialog showHelp = new MyDialog(frame, aboutHelp);
+		    showHelp.pack();
+		    showHelp.setVisible(true);
+                }
+	    });
+	    // options
 	    optionA.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent fred) {
 		    myGame.update("OPTION_A");
+		    //testOptA();
                 }
 	    });
 	    optionB.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent fred) {
 		    myGame.update("OPTION_B");
+		    //testOptB();
                 }
 	    });
 	    card.addActionListener(new ActionListener() {
@@ -393,18 +465,12 @@ class FillrBustGui extends JFrame{
 		    if (gameSTATE == FillRBustGame.STATES.INIT){
 				init_game();
 		    }else if (gameSTATE == FillRBustGame.STATES.DRAWCARD){
-				//Image sepImg = Toolkit.getDefaultToolkit()
-			    //          .getImage(mapCardImage(myGame.getCard()));
-				//System.out.println(myGame.getCard());
-		        //card.setIcon(new ImageIcon(sepImg));
-				//gameSTATE = myGame.getState();
 			    myGame.update("CARD");
 		    }
-		    //details.append("Roll the dice.\n");
 		  }
 	    });
 
-		dice = diceP.getDice();
+	    dice = diceP.getDice();
 	    for (JToggleButton die : dice) {
 		    die.addActionListener(new ActionListener() {
 			    public void actionPerformed(ActionEvent fred) {
@@ -454,6 +520,7 @@ class FillrBustGui extends JFrame{
 		    showHelp.setVisible(true);
                 }
 	    });
+
 	    ActionListener updateTask = new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent evt) {
@@ -491,22 +558,9 @@ class FillrBustGui extends JFrame{
 	    details.getActionMap().put("fontUp",
                              fontUp);
 
-	    actions.setLayout(null);
-	    top.setLayout(null);
-	    frame.setLayout(null);
-          frame.setVisible(true);
-	    //System.out.print("FillrBustGui FINISHED");
 	    init_game();
 		new javax.swing.Timer(UPDATE_PERIOD, updateTask).start();
-
-    }
-
-    public FillrBustGui() {
-	     String[] list = {"Clyde","Nancy"};
-	     int winner = 5000;
-		myGame = new FillRBustGame(list,winner);
-
-    }
+	}
 
 	void URrepaint() {
 		//System.out.println("repaint                     repaint");
@@ -517,6 +571,7 @@ class FillrBustGui extends JFrame{
      //  game action methods: {
     void init_game() {
 	 currentPlayer = myGame.setGui(this);
+	 currentPlayer = 0;
 	 gameSTATE=myGame.getState();
 	 players.get(currentPlayer).toggleTurn();
 	 //System.out.println("init_game was here; currentPlayer "+currentPlayer);
@@ -544,7 +599,9 @@ class FillrBustGui extends JFrame{
 
     void deRoll(){
 	    //System.out.println("deRoll");
-		diceP.setDice("000000 ", "0000000");
+		//diceP.setDice("000000", "000000");
+		//diceR.setDice("000000");
+		setDice("000000 ","000000");
     }
 
     void setCard(Cards.Name name) {
@@ -596,7 +653,8 @@ class FillrBustGui extends JFrame{
 	 */
 	void reSizeFrame() {
 	   frameDims = getDims(config.players.length, config.cardDir, config.diceDir);
-         frame.setSize(frameDims[0].width, frameDims[0].height);//  |                      |               |
+         this.setSize(frameDims[0].width, frameDims[0].height);//  |                      |               |
+	        /*
 		top.setBounds(0,0,frameDims[0].width,frameDims[1].height);
 		detailsP.setBounds(0,frameDims[1].height,
 					frameDims[0].width,frameDims[0].height-frameDims[1].height);
@@ -613,21 +671,22 @@ class FillrBustGui extends JFrame{
 	    scores.setBounds(80,ypos,400,25);
 		ypos+=30;
 	    choices.setBounds(200,ypos,100,95);
+	    */
 	}
 
 	public void ComplainLoudly(String complaint, String topic, int large) {
-		MyDialog showHelp = new MyDialog(frame, complaint,topic);
+		MyDialog showHelp = new MyDialog(this, complaint,topic);
 		showHelp.setFont(large);
 		showHelp.pack();
 		showHelp.setVisible(true);
 	}
 	public void ComplainLoudly(String complaint, String topic) {
-		MyDialog showHelp = new MyDialog(frame, complaint,topic);
+		MyDialog showHelp = new MyDialog(this, complaint,topic);
 		showHelp.pack();
 		showHelp.setVisible(true);
 	}
 	public void ComplainLoudly(String complaint) {
-		MyDialog showHelp = new MyDialog(frame, complaint);
+		MyDialog showHelp = new MyDialog(this, complaint);
 		showHelp.pack();
 		showHelp.setVisible(true);
 	}
@@ -662,8 +721,8 @@ class FillrBustGui extends JFrame{
 	 * potential is the chosen of the most recently rolled dice.
 	 */
 	public void setRunning(int running, int potential) {
-		this.running.setText(String.format("running score = %d",running));
-		this.potential.setText(String.format("potential score = %d",potential));
+		diceP.setScore(potential);
+		diceR.setScore(running);
 	}
 
 	public String getDiceSelection() {
@@ -671,7 +730,10 @@ class FillrBustGui extends JFrame{
 	}
 
 	public void setSelected(String mask) {
-		diceP.setSelected(mask);
+	        //System.out.println("setselected mask:"+mask+"|");
+		String[] parts = mask.split(" ");
+		//diceP.setSelected(mask);
+		diceP.setSelected(parts[0]);
 	}
 
 	/**
@@ -681,10 +743,14 @@ class FillrBustGui extends JFrame{
 	 * any reserved dice are listed after a space-character.
 	 */
 	public void setDice(String set, String mask){
-		diceP.setDice(set,mask);
+		String[] parts=set.split(" ");
+		diceP.setDice(parts[0],mask.substring(0,parts[0].length()));
+		if (parts.length > 1)diceR.setDice(parts[1]);
+		else diceR.setDice("");
 	}
 	public void setDice(){
 		diceP.setDice("","");
+		diceR.setDice("");
 	}
 
 	public void declareWinner(String name) {
@@ -697,7 +763,7 @@ class FillrBustGui extends JFrame{
 	public void getNewTarget (){
 		//System.out.println("'Change the score to win' is unimplemented.\n");
 		String s = JOptionPane.showInputDialog(
-				frame,"Enter a new max score: "
+				this,"Enter a new max score: "
 				,myGame.getMaxScore()
 		);
 		if (s!=null){
@@ -722,25 +788,31 @@ class FillrBustGui extends JFrame{
 	 */
 
 	public void makeRCfile() {
-		config.writeConfig(frame, myGame.getMaxScore(), myGame.getPlist());
+		config.writeConfig(this, myGame.getMaxScore(), myGame.getPlist());
 	}
 
 	public void toggleHoverHelp(String help) {
 		//TODO make this work
-		MyDialog showHelp = new MyDialog(frame, help);
+		MyDialog showHelp = new MyDialog(this, help);
 		showHelp.pack();
 		showHelp.setVisible(true);
 	}
 
 	public void addNewPlayer() {
 		String s = JOptionPane.showInputDialog(
-				frame,"Enter the name of the new player: \n"
+				this,"Enter the name of the new player: \n"
 				+" prepend 'ai' if player is computer controlled.\n"
 				+" if last character is digit, it sets the riskiness."
 		);
 		UserPanel entry = new UserPanel(s, players.size());
+		//UserPanel entry = new UserPanel(s);
+	       GridBagConstraints uGB = new GridBagConstraints();
+		uGB.gridx     =0;
+		uGB.gridy     =1;
+		uGB.gridwidth =1;
+		uGB.gridx     =players.size();
 		players.add(entry);
-		users.add(entry);
+		users.add(entry,uGB);
 		myGame.addPlayer(s);
 		System.out.println("'add new player' is unimplemented.\n");
 		System.out.println("User Panel size:"+users.getSize());
@@ -763,41 +835,77 @@ class FillrBustGui extends JFrame{
 	    return cardFolder+"deck.gif";
     }
 
-	FBConfig config;
-	public static void main(String[] args){
-		/*
+	/**
+	 * Use components to determine size of the GUI areas
+	 * @param numPlayers
+	 * @param cardFolder
+	 * @param diceFolder
+	 * @return array of dimensions:<br>
+	 *                           0-> total<br>
+	 *                           1-> actions
+	 */
+	Dimension[] getDims(int numPlayers, String cardFolder, String diceFolder){
+		int widthU = numPlayers*110;
+		ImageIcon tem=null;
 		try {
-			Process process = Runtime.getRuntime().exec("pwd ");
-			String s;
-			int exitCode1 = process.waitFor();
-            System.out.println("Exit Code: " + exitCode1);
-			BufferedReader br = new BufferedReader(
-                new InputStreamReader(process.getInputStream()));
-            while ((s = br.readLine()) != null)
-                System.out.println("line: " + s);
-            process.waitFor();
-            System.out.println ("exit: " + process.exitValue());
-            process.destroy();
+		tem= new ImageIcon(getClass().getResource(diceFolder+"one.gif"));
+		} catch (NullPointerException e) {
+		    System.out.println("DiceDir: "+diceFolder+" seems not to hold dice images");
+		    System.exit(1);
 		}
-		catch (IOException e) {
-			int fred = 4;
+		int widthD= 8* tem.getIconWidth();
+		//width += 500; // = 8*dicedir.one.gif.width
+		int heightT = tem.getIconHeight();
+		try {
+		tem= new ImageIcon(getClass().getResource(cardFolder+"title.gif"));
+		} catch (NullPointerException e) {
+		    System.out.println("DiceDir: "+diceFolder);
+		    System.out.println("CardDir: "+cardFolder+" seems not to hold card images");
+		    System.exit(1);
 		}
-		catch (InterruptedException e) {
-			int fred = 4;
-		}
-		//StreamGobbler streamGobbler =
-        //    new StreamGobbler(process.getInputStream(), System.out::println);
-		//Future<?> future = executorService.submit(streamGobbler);
+		//int height = max((card.height+ dice.height + more), userpanel.height)
+		//                  + fontsize*nrows/10;
+		heightT += tem.getIconHeight() +120;
+		heightT = Math.max(heightT,300 /* UserPanel height*/);
+		int width = widthU + widthD;
+		int height=heightT + 300;
+		if(config.debug)System.out.printf("widthD,HeightT, widthU,totH: %d %d %d %d%n",widthD,heightT,widthU,height);
+		//height=700; width=700;
+		return new Dimension[] {new Dimension(width,height),
+			                new Dimension(widthD,heightT)};
+	}
 
-		 */
+	private void testOptA() {
+	    deRoll();
+	    setCard(Cards.Name.BONUS_400);
+	    setRunning(1050, 50);
+	}
+
+	private void testOptB() {
+	    setDice("123456 ","111111");
+	    setCard(Cards.Name.MUST_BUST);
+	    setRunning(0,1500);
+	}
+
+	private void initState(){
+	    //diceP.setDice("12355","10001");
+	    //diceP.setScore(200);
+	    //diceR.setDice("1");
+	    //diceR.setScore(100);
+	    setDice("1235 15","1000");
+	    setRunning(150,100);
+	}
+	public FillrBustGui(int dummy, FBConfig config) {
+	    this(config);
+	    //initState();
+	}
+
+	public static void main(String args[]){
 		FBConfig config = new FBConfig();
 		String[] list = config.players;
 		int winner = config.goal;
 		boolean doGui = config.gui;
-		//String[] list = {"Clyde","aiNancy4"};
-		//int winner = 5000;
-		//boolean doGui = true;
-		boolean debug = false;
+		//boolean debug = false;
 		String argee;
 		if (args.length >0){
 			ArrayList<String> temp = new ArrayList<>();
@@ -812,8 +920,6 @@ class FillrBustGui extends JFrame{
 				else if (args[i].equals("-m")) {
 					config.goal = Integer.parseInt(args[i++ +1]);
 				}
-				/*
-				 */
 				else if (args[i].equals("-p")) {
 					temp.add(args[i++ + 1]);
 				}
@@ -830,26 +936,28 @@ class FillrBustGui extends JFrame{
 					if (argee.contains("/"))config.cardDir = argee+"/";
 					else config.cardDir = "images/Cards/"+argee+"/";
 				}
+				else if (args[i].equals("-V")) config.layout = DicePanel_V.LayoutOrientation.HORIZONTAL;
 				else if (args[i].equals("-C")) {
 					argee = args[i++ +1];
 					config.readFile(argee);
 				}
-
+				/*
+				 */
 			}
 			if (!temp.isEmpty()) list = temp.toArray(list);
 			if (!temp.isEmpty()) config.players = temp.toArray(list);
 		}
+
 		if (doGui) {
-			java.awt.EventQueue.invokeLater(new Runnable() {
-			  public void run() {
-				new FillrBustGui(config).setVisible(true);
-			  }
-			});
+		    java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+			    new FillrBustGui(1,config).setVisible(true);
+			}
+		    });
 		} else {
 			System.out.println("aint doin no stinkin GUI");
-			FillRBustGame myGame = new FillRBustGame(list, winner);
-			myGame.textInterface();
+			//FillRBustGame myGame = new FillRBustGame(list, winner);
+			//myGame.textInterface();
 		}
-    }
-
+	}
 }
