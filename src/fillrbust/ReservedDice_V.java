@@ -112,32 +112,33 @@ class ReservedDice_V extends JPanel{
 	scoreLabel.setHorizontalAlignment(JLabel.CENTER);
 	gbC.fill=GridBagConstraints.HORIZONTAL;
 	gbC.gridwidth=3;
-            if(vert_layout == DicePanel_V.LayoutOrientation.VERTICAL){
-	gbC.gridy=3;
-	gbC.gridx=1;
-            }else {
-	gbC.gridy=4;
-	gbC.gridx=0;
-            }
+	if(vert_layout == DicePanel_V.LayoutOrientation.VERTICAL){
+	    gbC.gridy=3;
+	    gbC.gridx=1;
+	}else {
+	    gbC.gridy=4;
+	    gbC.gridx=0;
+	}
 	add(scoreLabel, gbC);
 	Fence fence;
-        if(vert_layout== DicePanel_V.LayoutOrientation.VERTICAL){
 	// make a "fence" above the dice
-	fence = new Fence(fHit,(iconH*2/*+gapW*2*/)+fontH);
-	gbC.fill=GridBagConstraints.NONE;
-	gbC.anchor=GridBagConstraints.WEST;
-	gbC.weightx=1.;
-	gbC.gridwidth=1;
+        if(vert_layout== DicePanel_V.LayoutOrientation.VERTICAL){
+	    fence = new Fence(fHit,(iconH*2/*+gapW*2*/)+fontH);
+	    gbC.fill=GridBagConstraints.NONE;
+	    gbC.fill=GridBagConstraints.VERTICAL;
+	    gbC.anchor=GridBagConstraints.WEST;
+	    gbC.weightx=1.;
+	    gbC.gridwidth=1;
 	    gbC.gridheight=4;
-	gbC.gridx=0;
-	gbC.gridy=0;
+	    gbC.gridx=0;
+	    gbC.gridy=0;
         } else {
-        fence = new Fence((iconW*3/*+gapW*2*/)-20, fHit);
-	gbC.fill=GridBagConstraints.BOTH;
-	gbC.weightx=0.;
-	gbC.gridwidth=3;
-	gbC.gridx=0;
-	gbC.gridy=0;
+	    fence = new Fence((iconW*3/*+gapW*2*/)-20, fHit);
+	    gbC.fill=GridBagConstraints.BOTH;
+	    gbC.weightx=0.;
+	    gbC.gridwidth=3;
+	    gbC.gridx=0;
+	    gbC.gridy=0;
         }
 	add(fence, gbC);
 	// make a space between the rows
@@ -190,7 +191,8 @@ class ReservedDice_V extends JPanel{
 			bb.setIcon(new ImageIcon(getClass().getResource(
 					String.format("%s.gif",iname))));
 		} catch (NullPointerException e) {
-			Image dicPImg = Toolkit.getDefaultToolkit().getImage(String.format("%s.gif", iname));
+			Image dicPImg = Toolkit.getDefaultToolkit().getImage(
+					String.format("%s.gif", iname));
 			bb.setIcon(new ImageIcon(dicPImg));
 		}
 	}
@@ -198,11 +200,11 @@ class ReservedDice_V extends JPanel{
 	    String iname=IMG_DIR+"blackdie";
 	    JLabel bb = dice.get(i);
 		try {
-			//InputStream is;
 			bb.setIcon(new ImageIcon(getClass().getResource(
-					String.format("%s.gif",iname))));
+				String.format("%s.gif",iname))));
 		} catch (NullPointerException e) {
-			Image dicPImg = Toolkit.getDefaultToolkit().getImage(String.format("%s.gif", iname));
+			Image dicPImg = Toolkit.getDefaultToolkit().getImage(
+				String.format("%s.gif", iname));
 			bb.setIcon(new ImageIcon(dicPImg));
 		}
 	}
@@ -211,9 +213,9 @@ class ReservedDice_V extends JPanel{
     public Dimension getPSize(){
 	//return new Dimension(3*(iconW+gapW)-4, 2*(iconH+gapH)-4+10);
         if(vert_layout== DicePanel_V.LayoutOrientation.VERTICAL)
-	return new Dimension(3*iconW+2+fHit, 2*iconH+34+18+2);
+	    return new Dimension(3*iconW+2+fHit, 2*iconH+34+18+2);
         else
-	return new Dimension(3*iconW+2, 2*iconH+fHit+34+18+2);
+	    return new Dimension(3*iconW+2, 2*iconH+fHit+34+18+2);
     }
 
     /** graphics to embed in GUI
@@ -259,10 +261,10 @@ class ReservedDice_V extends JPanel{
 	    GradientPaint shader;
            if(vert_layout== DicePanel_V.LayoutOrientation.VERTICAL)
 	     shader = new GradientPaint(  0.f,0.f,new Color(164,164,164),
-			                               wid,0.f,Color.BLACK);
+			                  wid,0.f,Color.BLACK);
            else
 	     shader = new GradientPaint(  0.f,0.f,new Color(164,164,164),
-			                               0.f,hit,Color.BLACK);
+			                  0.f,hit,Color.BLACK);
 	    g2d.setPaint(shader);
 	    g2d.fillRect(0, 0, wid,hit);
             setPreferredSize(new Dimension(wid, hit));
@@ -278,6 +280,9 @@ class ReservedDice_V extends JPanel{
 	    //g.setPaint(primary);
             g.fillRect(200, 10, 30, 80);
 	    */
+           if(vert_layout== DicePanel_V.LayoutOrientation.VERTICAL)
+	    g.drawImage(image0,0,10,null);
+           else
 	    g.drawImage(image0,10,0,null);
         }
     }
@@ -288,15 +293,14 @@ class ReservedDice_V extends JPanel{
 	    set = args[0];
 	    java.awt.EventQueue.invokeLater(new Runnable() {
 		public void run() {
-				    JFrame frame = new JFrame("Show Reserved Dice");
-				    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				    ReservedDice_V dp = new ReservedDice_V();
-				    //frame.setSize(700,300);
-				    Dimension dim = dp.getPSize();
-				    dp.setBounds(0,0,(int)dim.getWidth(), (int)dim.getHeight()+22);
-				    frame.setSize((int)dim.getWidth(), (int)dim.getHeight()+29);
-				    frame.getContentPane().add(dp);
-
+		    JFrame frame = new JFrame("Show Reserved Dice");
+		    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		    ReservedDice_V dp = new ReservedDice_V();
+		    //frame.setSize(700,300);
+		    Dimension dim = dp.getPSize();
+		    dp.setBounds(0,0,(int)dim.getWidth(), (int)dim.getHeight()+22);
+		    frame.setSize((int)dim.getWidth(), (int)dim.getHeight()+29);
+		    frame.getContentPane().add(dp);
 		    frame.setVisible(true);
 		    dp.setDice(set);
 		    dp.setScore("550");
@@ -305,15 +309,14 @@ class ReservedDice_V extends JPanel{
 	}else 
 	    java.awt.EventQueue.invokeLater(new Runnable() {
 		public void run() {
-				    JFrame frame = new JFrame("Show Reserved Dice");
-				    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				    ReservedDice_V dp = new ReservedDice_V(DicePanel_V.LayoutOrientation.HORIZONTAL);
-				    //frame.setSize(700,300);
-				    Dimension dim = dp.getPSize();
-				    dp.setBounds(0,0,(int)dim.getWidth(), (int)dim.getHeight()+21);
-				    frame.setSize((int)dim.getWidth(), (int)dim.getHeight()+29);
-				    frame.getContentPane().add(dp);
-
+		    JFrame frame = new JFrame("Show Reserved Dice");
+		    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		    ReservedDice_V dp = new ReservedDice_V(DicePanel_V.LayoutOrientation.HORIZONTAL);
+		    //frame.setSize(700,300);
+		    Dimension dim = dp.getPSize();
+		    dp.setBounds(0,0,(int)dim.getWidth(), (int)dim.getHeight()+21);
+		    frame.setSize((int)dim.getWidth(), (int)dim.getHeight()+29);
+		    frame.getContentPane().add(dp);
 		    frame.setVisible(true);
 		}
 	    });

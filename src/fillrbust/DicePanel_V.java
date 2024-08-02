@@ -129,11 +129,12 @@ class DicePanel_V extends JPanel{
 	gbC.gridwidth=1;
 	gbC.gridx=3;
 	gbC.gridy=0;
-	gbC.gridheight = 3;
+	gbC.gridheight = 4;
         }else{
 	// make a "fence" below the dice
 	fence = new Fence((iconW*3/*+gapW*2*/)-20, fHit);
 	gbC.fill=GridBagConstraints.BOTH;
+	gbC.fill=GridBagConstraints.HORIZONTAL;
 	gbC.weightx=0.;
 	gbC.gridwidth=3;
 	gbC.gridx=0;
@@ -231,10 +232,10 @@ class DicePanel_V extends JPanel{
 	    GradientPaint shader;
            if(vert_layout== LayoutOrientation.VERTICAL)
 	    shader = new GradientPaint(  0.f,0.f,new Color(174,174,184),
-		                                               wid,0.f,Color.WHITE);
+		                         wid,0.f,Color.WHITE);
 	   else
             shader = new GradientPaint(  0.f,0.f,new Color(174,174,184),
-		                                       0.f,hit,Color.WHITE);
+		                         0.f,hit,Color.WHITE);
 	    g2d.setPaint(shader);
 	    g2d.fillRect(0, 0, wid,hit);
             setPreferredSize(new Dimension(wid, hit));
@@ -250,6 +251,9 @@ class DicePanel_V extends JPanel{
 	    //g.setPaint(primary);
             g.fillRect(200, 10, 30, 80);
 	    */
+           if(vert_layout== LayoutOrientation.VERTICAL)
+	    g.drawImage(image0,0,10,null);
+	   else
 	    g.drawImage(image0,10,0,null);
         }
     }
@@ -287,28 +291,26 @@ class DicePanel_V extends JPanel{
 	if (args.length > 0) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-				JFrame frame = new JFrame("Show Dice Panel");
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				DicePanel_V dp = new DicePanel_V();
-				//frame.setSize(700,300);
-				Dimension dim = dp.getPSize();
-				frame.setSize((int)dim.getWidth(), (int)dim.getHeight());
-				frame.getContentPane().add(dp);
-
+		JFrame frame = new JFrame("Show Dice Panel");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		DicePanel_V dp = new DicePanel_V();
+		//frame.setSize(700,300);
+		Dimension dim = dp.getPSize();
+		frame.setSize((int)dim.getWidth(), (int)dim.getHeight());
+		frame.getContentPane().add(dp);
                 frame.setVisible(true);
             }
         });
     }else {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-				JFrame frame = new JFrame("Show Dice Panel");
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				DicePanel_V dp = new DicePanel_V(LayoutOrientation.HORIZONTAL);
-				//frame.setSize(700,300);
-				Dimension dim = dp.getPSize();
-				frame.setSize((int)dim.getWidth(), (int)dim.getHeight());
-				frame.getContentPane().add(dp);
-
+		JFrame frame = new JFrame("Show Dice Panel");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		DicePanel_V dp = new DicePanel_V(LayoutOrientation.HORIZONTAL);
+		//frame.setSize(700,300);
+		Dimension dim = dp.getPSize();
+		frame.setSize((int)dim.getWidth(), (int)dim.getHeight());
+		frame.getContentPane().add(dp);
                 frame.setVisible(true);
             }
         });

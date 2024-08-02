@@ -1,52 +1,34 @@
-SOURCE = AIPlayer.java \
-Cards.java \
-Dice.java \
-FBConfig.java \
-MyDialog.java \
-Player.java \
-UserPanel.java \
-DicePanel.java
+# not a very smart Makefile
 
-APPSOURCE =FillRBustGame.java \
-FillrBustTextui.java \
-FillrBustGui.java
+whole:
+	javac -d .  FillrBustGui.java FillRBustGame.java
+	#javac -d .  FillrBustGui.java
 
-TESTSOURCE = testCards.java \
-testDice.java \
-testDicePanel.java \
-testPlayer.java \
-testProbAI.java \
-testUserPanel.java
-
-#OUT = ../../out
-OUT = .
-OUTPATH = $(OUT)/fillrbust
-PARTS = $(OUTPATH)/$(SOURCE:.java=.class)
-#PARTS = $(SOURCE:.java=.class)
-TESTS = $(OUTPATH)/$(TESTSOURCE:.java=.class)
-
-.java.class:
-	javac -d $(OUT) $*.java
-
-#parts:$(PARTS)
 parts:
-	javac -d $(OUT)  Player.java 
-	javac -d $(OUT)  AIPlayer.java 
-	javac -d $(OUT)  Cards.java 
-	javac -d $(OUT)  Dice.java 
-	javac -d $(OUT)  FBConfig.java 
-	javac -d $(OUT)  MyDialog.java 
-	javac -d $(OUT)  UserPanel.java 
-	javac -d $(OUT)  DicePanel.java
+	make gameparts
+	make guiparts
 
-tests:$(TESTSOURCE)
-	javac -d $(OUT) $(TESTSOURCE) 
+gameparts:
+	javac -d .  Player.java
+	javac -d .  AIPlayer.java
+	javac -d .  Cards.java
+	javac -d .  Dice.java
+	javac -d .  FBConfig.java
 
-app:$(APPSOURCE)
-	javac -d $(OUT) $(APPSOURCE)
+guiparts:
+	javac -d .  UserPanel.java
+	javac -d .  DicePanel_V.java
+	javac -d .  ReservedDice_V.java
+	javac -d .  MyDialog.java
 
-jar:fillrbust.jar
-	make fillrbust.jar
+tests:
+	javac -d .  testDicePanel.java
+	javac -d .  testDicePanel_V.java
+	javac -d .  testUserPanel.java
+	javac -d .  testHorizLayout.java
 
-fillrbust.jar: $(OUT)/FillrBustGui.class
+jar:
 	jar cfe fillrbust.jar fillrbust.FillrBustGui fillrbust/*
+
+doc:
+	javadoc -d ./docs -cp fillrbust -package *.java
