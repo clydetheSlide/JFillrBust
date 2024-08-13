@@ -41,7 +41,7 @@ class UserPanel extends JPanel {
 			 es -=1;
 			 //System.out.println(uname + " has risk " + aa);
 		 }
-		this.uname = uname.substring(0, es);
+		this.uname = uname.substring(0, es);  // name does not include risk value
 	} else {
 		this.uname = uname;
 		//System.out.println(uname+" is not ai");
@@ -60,21 +60,25 @@ class UserPanel extends JPanel {
 	add(scoreToDate);
     }
 
-    public void changeName(String newn){
+	public void changeName(String newn){
+		changeName(newn,false);
+	}
+    public void changeName(String newn, boolean debug){
 	    if (newn.indexOf("ai")==0){
-		    //System.out.println(uname+" is ai");
+		    if(debug)System.out.println(newn+" is ai");
 		    int es = newn.length();
 		    char aa =newn.charAt(es-1);
 		    //System.out.println(aa);
 		    if (Character.isDigit(aa))
 		    {
 			    es -=1;
-			    //System.out.println(uname + " has risk " + aa);
+			    if(debug)System.out.println(newn + " has risk " + aa);
 		    }
 		    this.uname = newn.substring(0, es);
+		    if(debug)System.out.println("Rename to "+this.uname);
 	    } else {
 		    this.uname = newn;
-		    //System.out.println(uname+" is not ai");
+		    if(debug)System.out.println(newn+" is not ai");
 	    }
 	name.setText(newn);
     }

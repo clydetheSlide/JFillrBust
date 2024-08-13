@@ -20,12 +20,12 @@ import java.util.ArrayList;
  * Shows the state of the dice graphically.
  *
  * Show the numbered dice<br>
- *	whether it scores<br>
- *	whether it is chosen to score<br>
- *	seperate the reserved ones from those that were just rolled
- *	separater is vertical on the right side
+ *	whether it scores,<br>
+ *	whether it is chosen to score.<br>
+ *	Seperate the reserved ones from those that were just rolled.<br>
+ *	Separater is vertical on the right side
  *	or
- *	separater is horizontal on the bottom
+ *	separater is horizontal on the bottom.
  *  
  */
 class DicePanel_V extends JPanel{
@@ -43,6 +43,10 @@ class DicePanel_V extends JPanel{
     private JLabel scoreLabel;
     private JLabel spaceLabel;
     private boolean debug=false;
+
+	/**
+	 * orientation of the seperator graphic
+	 */
     public enum LayoutOrientation{
 	VERTICAL, HORIZONTAL;
     }
@@ -50,7 +54,7 @@ class DicePanel_V extends JPanel{
 
     /** Display a set of six dice
      *  and a number
-     *  (presumable the score of the displayed dice)
+     *  (presumably the score of the displayed dice)
      */
     public DicePanel_V() {
 		this("images/");
@@ -154,6 +158,10 @@ class DicePanel_V extends JPanel{
 	add(spaceLabel, gbC);
     }
 
+	/** set the value to be displayed as
+	 *  the score of the selected dice
+	 * @param score
+	 */
     public void setScore(int score) {
 	setScore(String.format("%d",score));
     }
@@ -163,9 +171,9 @@ class DicePanel_V extends JPanel{
 
     /**
      * Set the dice display with two 6-character Strings:
-     *   @param set  the first string represents the values (1-6),
-     *   a space indicates all dice after are 'reserved'
-     *   @param picked the second string indicates whether the die is selected
+     *   @param set  string represents the dice values (1-6),
+     *   @param picked string indicates whether the die is selected
+     *                 (1 selected, 0 not)
      */
     public void setDice(String set, String picked){
 	boolean reserv = false;
@@ -213,6 +221,10 @@ class DicePanel_V extends JPanel{
 	}
     }
 
+	/** report the estimated dimensions of the panel based on the dice image set
+	 *
+	 * @return width and height in a Dimension object
+	 */
     public Dimension getPSize(){
 	//return new Dimension(3*(iconW+gapW)-4, 2*(iconH+gapH)-4+10);
         if(vert_layout== LayoutOrientation.VERTICAL)

@@ -20,8 +20,14 @@ class FillRBustGame {
 
 	private static final String EMPTY_BUTTON = "        ";
 
+	/**
+	 * Game STATES determine the actions and options according
+	 * to the rules of the game.<br>
+	 * Those actions and options are codified in the update method.
+	 */
 	public enum STATES {
-		INIT, NEXTPLAYER    //
+		INIT
+		//, NEXTPLAYER    //
 		, DRAWCARD          // only action is to draw a card
 		, DREWVENGEANCE     // can choose yes to start rolling or draw
 		, ROLLFIRST         // after drawing a playable card, only option is to roll
@@ -30,7 +36,8 @@ class FillRBustGame {
 							// Depending on other states whether can choose dice
 							// or take score and quit
 		, FILLED            // after filling, there is the option to score or draw again
-		, BUSTED, ROLLSOME, DOUBLETROUBLE, WINNER
+		//, BUSTED, ROLLSOME, DOUBLETROUBLE
+		, WINNER
 	}
 
 	private Cards deck = new Cards();
@@ -76,6 +83,11 @@ class FillRBustGame {
 		player = players.get(plist[currentPlayer]);
 	}
 
+	/** Add a player
+	 *
+	 * @param name new players name<br>
+	 *             ['ai']string[riskvalue]
+	 */
 	public void addPlayer(String name){
 		ArrayList<String> temp = new ArrayList<String>();
 		for(String each : playerList) temp.add(each);
@@ -94,6 +106,10 @@ class FillRBustGame {
 			players.put(name, new Player(name));
 	}
 
+	/** report the list of players' names
+	 *
+	 * @return
+	 */
 	public String[] getPlist() {
 		return playerList;
 	}
@@ -104,6 +120,45 @@ class FillRBustGame {
 		//for(String each: playerList)System.out.println(each);
 		//System.out.println(currentPlayer);
 		return players.get(playerList[currentPlayer]);
+	}
+
+	/** Change player's name
+	 *
+	 * @param index
+	 * @param newName
+	 * @return success indicator  0 is success, 1 is failure<br>
+	 * Current implementation does not allow conversion between human and AI.
+	 */
+	public int changeName(int index, String newName) {
+		// TODO change player name
+		String oldName = playerList[index];
+		Player pp = players.get(oldName);
+		if (newName.indexOf("ai") == 0) {  // new name indicates AI
+			if (oldName.indexOf("ai") == 0) {  //no conversion required
+				int risk = 3;
+				int end = newName.length();
+				char rc = newName.charAt(end - 1);
+				if ("1234567890".indexOf(rc) >= 0) {
+					risk = Character.getNumericValue(rc);
+					end = end - 1;
+				}
+				if(debug)System.out.println(String.format("Rename %s to %s",oldName,newName.substring(0, end)));
+				pp.changeName(newName.substring(0, end));
+				AIPlayer app = (AIPlayer) pp;
+				app.setRisk(risk);
+				if(debug)System.out.println(players);
+				return 0;
+			} else { // convert AI to human
+				return 1;
+			}
+		} else if (oldName.indexOf("ai") == 0) { // convert human to AI
+			return 1;
+	    } else {
+			pp.changeName(newName);
+			if(debug)System.out.println(String.format("Rename %s to %s",oldName,newName));
+			if(debug)System.out.println(players);
+			return 0;
+		}
 	}
 
 	public int setGui(FillrBustGui gui) {
@@ -1136,6 +1191,13 @@ class FillRBustGame {
 					+stuff.substring(1));
 		}
 
+	}
+
+	public void setDebug() {
+		this.debug = !this.debug;
+	}
+	public void setDebug(boolean debug){
+		this.debug = debug;
 	}
 
 	public static void main(String[] args) {

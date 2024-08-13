@@ -41,6 +41,10 @@ class AIPlayer extends Player {
 		return risker;
 	}
 
+	public void setRisk(int risker){
+		this.risker = risker;
+	}
+
 	public String ynResp(String risky, String conservative, Map rtype) {
 	return ynResp(risky, conservative, rtype, false);
     }

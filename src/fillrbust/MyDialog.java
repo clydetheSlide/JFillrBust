@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/** Use the JDialog feature of the javax library
+ *  to display a message in a seperate window.
+ */
 class MyDialog extends JDialog
 	      // implements ActionListener
 	      //,PropertyChangeListener

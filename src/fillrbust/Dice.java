@@ -2,8 +2,15 @@ package fillrbust;
 
 import java.util.*;
 
-/** Set of six standard cubic dice with a number on each side*/
+/** Set of six standard cubic dice with a number on each side.<br>
+ *  The class maintains a record of which dice are selected,<br>
+ *  the score of the selected dice,<br>
+ *  and which dice are reserved from subsequent rolls.
+ */
 class Dice {
+	/**
+	 * The set of scoreable dice combinations and their values
+	 */
 	static class Scoreable {
 		String group;
 		int score;
@@ -56,7 +63,7 @@ class Dice {
 		score = scoreIt(rollable);
 	}
 
-	/* for testing */
+	/** for testing */
 	public Dice(String testroll) {
 		reserved = "999999".substring(testroll.length());
 		//System.out.println("initial reserved " + reserved);
@@ -75,6 +82,9 @@ class Dice {
 		selectedD = mask;
 	}
 
+	/**
+	 * Reset the selection mask
+	 */
 	public void deselected() {
 		score = scoreIt(rollable);
 	}
@@ -130,10 +140,12 @@ class Dice {
 		return scoreIt(keepIt, false);
 	}
 
-	private int scoreIt(String rolled) {
-		return scoreIt(rolled, true);
-	}
-
+	/**
+	 * Look for scoreable combinations in a set of dice
+	 * @param rolled  the set of dice sorted numerically
+	 * @param makeMask whether to make a selection mask or use an existing one (default true)
+	 * @return the score of the selected dice
+	 */
 	private int scoreIt(String rolled, boolean makeMask) {
 		// look for scoreable combinations in the set of dice
 		int p = 0;
@@ -170,6 +182,9 @@ class Dice {
 			}
 		}
 		return score;
+	}
+	private int scoreIt(String rolled) {
+		return scoreIt(rolled, true);
 	}
 
 	/**

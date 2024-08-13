@@ -19,7 +19,7 @@ import java.util.ArrayList;
 /** ReservedDice
  * Shows the state of the dice graphically.
  *
- * Show the numbered dice<br>
+ * Show the numbered dice: <br>
  *	separator oriented vertically on left
  *	or
  *	separater is horizontal on the bottom
@@ -57,6 +57,13 @@ class ReservedDice_V extends JPanel{
     public ReservedDice_V(DicePanel_V.LayoutOrientation layOr) {
 		this("images/", layOr);
     }
+	/** Display a set of six dice
+	 *  and a number
+	 *  (presumably the score of the displayed dice)
+	 *
+	 * @param diceDir - directory to find the images to represent the dice
+	 * @param layOr the orientation of the seperator graphic
+	 */
     public ReservedDice_V(String diceDir, DicePanel_V.LayoutOrientation layOr) {
 	this(diceDir, layOr, false);
     }
@@ -162,6 +169,10 @@ class ReservedDice_V extends JPanel{
 	add(scoreLabel2, gbC);
     }
 
+	/** set the number that will be displayed to represent the score of the dice
+	 *
+	 * @param score
+	 */
     public void setScore(int score) {
 	setScore(String.format("%d",score));
     }
@@ -171,7 +182,7 @@ class ReservedDice_V extends JPanel{
 
     /**
      * Set the dice display with 6-character String:
-     *   @param set  the first string represents the values (1-6),
+     *   @param set  string represents the values of the dice (1-6),
      */
     public void setDice(String set){
 	//System.out.println("in setDice, dir = "+IMG_DIR);
@@ -209,8 +220,12 @@ class ReservedDice_V extends JPanel{
 		}
 	}
     }
-    
-    public Dimension getPSize(){
+
+	/** report the dimensions of the panel based on
+	 *  the size of the images used to represent the dice.
+	 * @return width and height as a Dimension object
+	 */
+	public Dimension getPSize(){
 	//return new Dimension(3*(iconW+gapW)-4, 2*(iconH+gapH)-4+10);
         if(vert_layout== DicePanel_V.LayoutOrientation.VERTICAL)
 	    return new Dimension(3*iconW+2+fHit, 2*iconH+34+18+2);

@@ -18,10 +18,10 @@ import java.util.*;
 /** FillrBustGui
  * Shows the state of the game by displaying graphical depictions of
  * <ul>
- * <li>    the players' scores
- * <li>    the card
- *  <li>   the dice
- *  <li>   the choices
+ * <li>    the players' scores,
+ * <li>    the card,
+ *  <li>   the dice,
+ *  <li>   the choices,
  * <li>    the instructions to the user
  * </ul>
  *  The state of the game is maintained by the game itself.
@@ -155,21 +155,21 @@ class FillrBustGui extends JFrame{
 "At the end of the game, ie when someone's score exceeds the goal and the 'Winner' screen appears,\n"+
 "right clicking in it will allow you to change the goal. This allows for sore losers!";
 
-	private static String newHelp="Start a new game with the same players.";
+	private static final String newHelp="Start a new game with the same players.";
 
-    private static String playerHelp="Any time during a game, another player can jump in - with zero score of course.\n\n"+
+    private static final String playerHelp="Any time during a game, another player can jump in - with zero score of course.\n\n"+
 "Prepending 'ai' to a name makes that player computer controlled. "+
 "A number at the end of an ai player name indicates the risk that player will accept for decisions "+
 "such as whether to roll again, take vengeance, or continue after a FILL. Default value is 5. "+
 "Right click allows name change. ERROR ALERT: can't change player from real to AI.";
 
-    private static String quitHelp=" Duh! It quits; goes away; exits; beats a hasty retreat, makes like a tree and leaves, makes like a buffalo turd and hits the dusty trail.\n\n Which part of quit don't you understand?";
+    private static final String quitHelp=" Duh! It quits; goes away; exits; beats a hasty retreat, makes like a tree and leaves, makes like a buffalo turd and hits the dusty trail.\n\n Which part of quit don't you understand?";
 
-    private static String helpHelp="Obviously you found that 'specific' help describes individual buttons.\n "+
+    private static final String helpHelp="Obviously you found that 'specific' help describes individual buttons.\n "+
 "'Rules' describes the rules of the game.\n"+
 "'Synopsis' describes how the game is implemented with this Graphical User Interface";
 
-    private static String aboutHelp="FillRBust\n\n"
+    private static final String aboutHelp="FillRBust\n\n"
 		    +"javax.swing, java.awt\n"
 		    +"Version 2.0  July 24, 2024\n"
 		    +"Clyde Gumbert, mizugana@gmail.com\n"
@@ -522,41 +522,62 @@ class FillrBustGui extends JFrame{
 	    });
 
 	    ActionListener updateTask = new ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent evt) {
+		  @Override
+		  public void actionPerformed(ActionEvent evt) {
 		     URrepaint();  // check to see if the Computer player is playing
-		}
+		  }
 	    };
 	    Action winUp = new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    frameDims[0].height+=20;
+		  public void actionPerformed(ActionEvent e) {
+		     frameDims[0].height+=20;
 		     frame.setSize(frameDims[0].width, frameDims[0].height);
-		}
+		  }
 	    };
 	    card.getInputMap().put(KeyStroke.getKeyStroke('e'),
                             "winUp");
 	    card.getActionMap().put("winUp",
                              winUp);
 	    Action fontDn = new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
+		  public void actionPerformed(ActionEvent e) {
 		    config.fontSize-=4;
 		    details.setFont(new Font("Ænigma Scrawl 4 BRK",Font.PLAIN, config.fontSize));
-		}
+		  }
 	    };
 	    details.getInputMap().put(KeyStroke.getKeyStroke('f'),
                             "fontDn");
 	    details.getActionMap().put("fontDn",
                              fontDn);
 	    Action fontUp = new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
+		  public void actionPerformed(ActionEvent e) {
 		    config.fontSize+=4;
 		    details.setFont(new Font("Ænigma Scrawl 4 BRK",Font.PLAIN, config.fontSize));
-		}
+		  }
 	    };
 	    details.getInputMap().put(KeyStroke.getKeyStroke('F'),
                             "fontUp");
 	    details.getActionMap().put("fontUp",
                              fontUp);
+		Action togDebug = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				config.debug = !config.debug;
+				myGame.setDebug();
+				System.out.println("toggled DEBUG "+(config.debug?"ON":"OFF"));
+			}
+		};
+		details.getInputMap().put(KeyStroke.getKeyStroke('D'),
+				"togDebug");
+		details.getActionMap().put("togDebug",
+				togDebug);
+
+		for (UserPanel each:players) {
+			each.myButton().addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					updateUserName(each);
+				}
+			});
+		}
 
 	    init_game();
 		new javax.swing.Timer(UPDATE_PERIOD, updateTask).start();
@@ -674,6 +695,12 @@ class FillrBustGui extends JFrame{
 	    */
 	}
 
+	/** Open a Frame to display a message
+	 *
+	 * @param complaint  - the test of the message
+	 * @param topic      - the title of the message frame
+	 * @param large      - the font size
+	 */
 	public void ComplainLoudly(String complaint, String topic, int large) {
 		MyDialog showHelp = new MyDialog(this, complaint,topic);
 		showHelp.setFont(large);
@@ -713,6 +740,23 @@ class FillrBustGui extends JFrame{
 	}
 	public void updateScore(int score) {
 		players.get(currentPlayer).newScore(score);
+	}
+
+	void updateUserName(UserPanel up){
+		System.out.println(up.getUName());
+		System.out.println(up.getIndex());
+		// TODO get a new name
+		String s = JOptionPane.showInputDialog(
+				this,"Enter a new name (unimplemented): "
+				,up.getUName()
+		);
+		if (s != null && !s.isEmpty()) {
+			if (myGame.changeName(up.getIndex(), s) == 0) {
+				up.changeName(s, config.debug);
+			} else {
+				ComplainLoudly("Conversion between AI and human is unimplemented.");
+			}
+		}
 	}
 
 	/**
@@ -820,6 +864,12 @@ class FillrBustGui extends JFrame{
 		config.players = Arrays.copyOf(config.players, config.players.length + 1);
 		//config.players[config.players.length - 1] = entry.getName();
 		config.players[config.players.length - 1] = entry.getUName();
+		entry.myButton().addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				updateUserName(entry);
+			}
+		});
 		reSizeFrame();
 	}
 
