@@ -10,24 +10,39 @@ import java.util.Scanner; // Import the Scanner class to read text files
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-/** Read/write a configuration file for FillRBust. */
+/** Defines a configuration for FillRBust <br>
+ * and provides defaults values
+ * and IO methods for storing and retrieving it. */
 public class FBConfig {
+	/** the score at which to declare a winner */
 	int goal;
-	String[] players;       // player name including preceding ai and risk
+	/** player name(s) including preceding ai and risk */
+	String[] players;
+	/** true to use GUI; otherwise text-driven */
 	boolean gui;
+	/** Speak the instructions (unimplemented) */
 	boolean speak;
+	/** draw animated dice (unimplemented) */
 	boolean pov;
+	/** directory to find the images depicting the cards */
 	String cardDir;
+	/** directory to find the images depicting the dice */
 	String diceDir;
+	/** font size for the user instructions */
 	int fontSize;
+	/** orientation of the DicePanel seperator */
 	DicePanel_V.LayoutOrientation layout;
+	/** name of the file to which to write this data */
 	String configFile;
+	/** whether to write debugging info to STDOUT */
 	boolean debug;
 
+	/** name the default file to store this config info */
 	public static String defaultFile() {
 		return ".fillrbustrc";
 	}
 
+	/** sets the default config data */
 	public void defaults() {
 		configFile = defaultFile();
 		goal = 5000;
@@ -42,6 +57,10 @@ public class FBConfig {
 		debug = false;
 	}
 
+	/** Initializes the FillRBust configuration
+	 *
+	 * @param filename file to look for config data
+	 */
 	public FBConfig(String filename) {
 	    //String lineA="Nothing read yet";
 	    String whereAmI="I don't know where I am";
@@ -67,6 +86,7 @@ public class FBConfig {
 		readFile(filename);
 	}
 
+	/** Looks in file for any FBConfig info */
 	public void readFile(String filename){
 	    String lineA="Nothing read yet";
 	    String whereAmI="I don't know where I am";
@@ -137,6 +157,12 @@ public class FBConfig {
 		this(FBConfig.defaultFile());
 	}
 
+	/** opens file chooser to determine where to store config info
+	 *
+	 * @param master - the root window for the GUI
+	 * @param max - score at which to declare a winner
+	 * @param players - list of players' names
+	 */
 	public void writeConfig(JFrame master, int max, String[] players) {
 		JFileChooser fc = new JFileChooser();
 		int returnVal = fc.showOpenDialog(master);

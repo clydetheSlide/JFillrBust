@@ -16,7 +16,7 @@ import java.util.*;
 
 
 /** FillrBustGui
- * Shows the state of the game by displaying graphical depictions of
+ * shows the state of the game by displaying graphical depictions of
  * <ul>
  * <li>    the players' scores,
  * <li>    the card,
@@ -209,7 +209,15 @@ class FillrBustGui extends JFrame{
 	private JButton optionB;
 	private FBConfig config;
 	private boolean vertOrient = true;
-	                                       
+
+	/** Provide a Graphical User Interface to play FillRBust.<br>
+	 *
+	 * @param config describes the players' names,<br>
+	 *               the score at which to declare a winner,<br>
+	 *               the directories to find the images for the dice and cards,<br>
+	 *               the orientation of the dice display,<br>
+	 *               the font-size of the user instructions
+	 */
 	public FillrBustGui(FBConfig config) {
 	   this.config = config;
 	   myGame = new FillRBustGame(config.players, config.goal);
@@ -618,6 +626,7 @@ class FillrBustGui extends JFrame{
 	    optionA.setText(option);
      }
 
+	 /** Display empty dice panels */
     void deRoll(){
 	    //System.out.println("deRoll");
 		//diceP.setDice("000000", "000000");
@@ -625,6 +634,10 @@ class FillrBustGui extends JFrame{
 		setDice("000000 ","000000");
     }
 
+	/** display Card
+	 *
+	 * @param name FillRBust card name
+	 */
     void setCard(Cards.Name name) {
 	    String imgN = mapCardImage(name);
 	    //System.out.println("new card image is " + imgN);
@@ -641,6 +654,7 @@ class FillrBustGui extends JFrame{
 	    }
     }
 
+	/** Add a line to the user instructions */
     void addDetails(String line){
 	    details.append(line);
     }
@@ -651,6 +665,10 @@ class FillrBustGui extends JFrame{
      }
     //  game action methods: }
 
+	/** switch the Player that is currently playing
+	 *
+	 * @param name the next player
+	 */
 	public void setCurrentPlayer(String name){
 		players.get(currentPlayer).toggleTurn();
 		currentPlayer = (currentPlayer+1)%players.size();
@@ -721,6 +739,12 @@ class FillrBustGui extends JFrame{
 	public void addScore(int round) {
 		players.get(currentPlayer).addScore(round);
 	}
+
+	/** add a score to the record of the player's scores
+	 *
+	 * @param name player name (current player if not specified)
+	 * @param score score to add
+	 */
 	public void addScore(String name, int score) {
 		for( UserPanel each : players) {
 			if (each.getUName().equals(name)){
@@ -730,6 +754,11 @@ class FillrBustGui extends JFrame{
 		}
 	}
 
+	/** update player total score
+	 *
+	 * @param name
+	 * @param score
+	 */
 	public void updateScore(String name, int score) {
 		for( UserPanel each : players) {
 			if (each.getUName().equals(name)){
@@ -742,14 +771,19 @@ class FillrBustGui extends JFrame{
 		players.get(currentPlayer).newScore(score);
 	}
 
+	/** change the name of a player in the display and the game.
+	 *
+	 * @param up the UserPanel for the player that needs a name change
+	 */
 	void updateUserName(UserPanel up){
 		System.out.println(up.getUName());
 		System.out.println(up.getIndex());
-		// TODO get a new name
+		// get a new name
 		String s = JOptionPane.showInputDialog(
 				this,"Enter a new name (unimplemented): "
 				,up.getUName()
 		);
+		// replace the user name in the game and the display
 		if (s != null && !s.isEmpty()) {
 			if (myGame.changeName(up.getIndex(), s) == 0) {
 				up.changeName(s, config.debug);
@@ -769,6 +803,7 @@ class FillrBustGui extends JFrame{
 		diceR.setScore(running);
 	}
 
+	/** report which dice are selected in the DicePanel. */
 	public String getDiceSelection() {
 		return diceP.getSelected();
 	}
@@ -782,9 +817,14 @@ class FillrBustGui extends JFrame{
 
 	/**
 	 * Given a string representing the dice,
-	 * set the graphical depiction.
-	 * The first part of the seven character string is the recently rolled dice;
+	 * set the graphical depiction.<br>
+	 * The first part of the seven character string is the recently rolled dice;<br>
 	 * any reserved dice are listed after a space-character.
+	 *
+	 * @param set the 7-character string of dice values
+	 * @param mask the selection mask: 1 - selected; 0-  not<br>
+	 *
+	 *  Without arguments indicates no dice displayed
 	 */
 	public void setDice(String set, String mask){
 		String[] parts=set.split(" ");
@@ -873,6 +913,7 @@ class FillrBustGui extends JFrame{
 		reSizeFrame();
 	}
 
+	/** maps the card name to the image that depicts it */
     String mapCardImage(Cards.Name type){
 	    if (type==Cards.Name.BONUS_300) return cardFolder+"bonus300.gif";
 	    if (type==Cards.Name.BONUS_400) return cardFolder+"bonus400.gif";
@@ -886,7 +927,7 @@ class FillrBustGui extends JFrame{
     }
 
 	/**
-	 * Use components to determine size of the GUI areas
+	 * Uses components to determine size of the GUI areas
 	 * @param numPlayers
 	 * @param cardFolder
 	 * @param diceFolder
@@ -945,6 +986,7 @@ class FillrBustGui extends JFrame{
 	    setDice("1235 15","1000");
 	    setRunning(150,100);
 	}
+
 	public FillrBustGui(int dummy, FBConfig config) {
 	    this(config);
 	    //initState();
