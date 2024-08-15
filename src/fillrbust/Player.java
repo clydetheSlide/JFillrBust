@@ -43,6 +43,14 @@ class Player{
 	this.name = name;
     }
 
+	/** copy one player to another
+	 *
+	 */
+	public void copy(Player from){
+		this.score = from.score;
+		this.isai = from.isai;
+	}
+
 	/** for testing purposes, set players total score
 	 *
 	 * @param sc

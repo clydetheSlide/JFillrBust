@@ -10,12 +10,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.*;
 
-/* testDicePanel
- * 
- *  Display the initial unset set of dice
- *  Set the dice
- *  Get which are selected
- *  Set which are selected
+/**
+ *  Display the initial unset set of dice<br>
+ *  Set the dice<br>
+ *  Get which are selected<br>
+ *  Set which are selected<br>
  *  Set action for each die
  */
 

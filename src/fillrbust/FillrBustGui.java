@@ -992,6 +992,19 @@ class FillrBustGui extends JFrame{
 	    //initState();
 	}
 
+	/** Usage: java -jar <path_to_jar> [-options]<br>
+			  where options are:<br>
+	 <ul>
+		<li>	-p playerName	    contestant name<br>
+			                    There are expected to be two or more contestants.
+			                    Just repeat the argument for each. Prepend 'ai' to
+			                    make the player computer controlled.<br>
+	 <li>	-m winningScore	    the score at which someone is delared the winner<br>
+	 <li>	-F fontSize	    size of the font for the instruction box<br>
+	 <li>	-d diceDir	    directory for dice images: Medium, Big, Orig<br>
+	 <li>	-c cardDir	    directory for card images: Orig, Big, Huge<br>
+	 </ul>
+	 */
 	public static void main(String args[]){
 		FBConfig config = new FBConfig();
 		String[] list = config.players;

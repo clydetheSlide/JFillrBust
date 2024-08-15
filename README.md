@@ -10,16 +10,16 @@ From the command line, without any parameters, without a config file, ie
 
 The initial playing screen looks like this.
 
-![initial game screen](README_dir/ready2play.gif)
+![initial game screen](README_dir/ready2play.jpg)
 
 After turning over a card and rolling the dice, one would be presented with a screen like this.
 
-![game screen 2](README_dir/playing.gif)
+![game screen 2](README_dir/playing.jpg)
 
 After selecting just the "1" and rolling again, the "1" is fenced off
 and the remaining dice are rolled as shown in this screen.
 
-![game screen 3](README_dir/playing2.gif)
+![game screen 3](README_dir/playing2.jpg)
 
 Rules of the game and instructions on how to use the graphical user interface to play it are available from the 'Help' menu. 
 

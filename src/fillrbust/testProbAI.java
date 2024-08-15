@@ -5,6 +5,10 @@ package fillrbust;
 
 import java.util.*;
 
+/** tests AIPlayer responses to several scenarios.<br>
+ * Command line argument is an AI player name
+ * where the last character is the risk level [1-9], 1 is risk-averse.
+ */
 class testProbAI {
 
 	static Random randy = new Random(new Date().getTime());

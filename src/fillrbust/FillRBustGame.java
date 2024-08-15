@@ -106,6 +106,11 @@ class FillRBustGame {
 			players.put(name, new Player(name));
 	}
 
+	public void removePlayer(String name){
+		// remove Player from players
+		// remove name from playerList
+	}
+
 	/** report the list of players' names
 	 *
 	 * @return
@@ -118,7 +123,10 @@ class FillRBustGame {
 		currentPlayer = (currentPlayer + 1)%playerList.length;
 		//System.out.println("in Game.nextPlayer:");
 		//for(String each: playerList)System.out.println(each);
-		//System.out.println(currentPlayer);
+		if(debug){
+			System.out.print(currentPlayer);
+			System.out.println(playerList[currentPlayer]);
+		}
 		return players.get(playerList[currentPlayer]);
 	}
 
@@ -133,6 +141,11 @@ class FillRBustGame {
 		// TODO change player name
 		String oldName = playerList[index];
 		Player pp = players.get(oldName);
+		if(debug){
+			System.out.println(String.format("changeName(%d,%s)",index,newName));
+			System.out.println("oldName: "+oldName);
+		}
+		int success = 1;  // successive success indicator - 0 is success
 		if (newName.indexOf("ai") == 0) {  // new name indicates AI
 			if (oldName.indexOf("ai") == 0) {  //no conversion required
 				int risk = 3;
@@ -146,19 +159,58 @@ class FillRBustGame {
 				pp.changeName(newName.substring(0, end));
 				AIPlayer app = (AIPlayer) pp;
 				app.setRisk(risk);
+				// update hashMap players
+				players.remove(oldName);
+				players.put(newName, app);
 				if(debug)System.out.println(players);
-				return 0;
+				// update playerList
+				ArrayList<String> temp = new ArrayList<String>();
+				for(int in=0;in<index;in++) temp.add(playerList[in]);
+				temp.add(newName);
+				for(int in=index+1;in<playerList.length;in++) temp.add(playerList[in]);
+				playerList = temp.toArray(playerList);
+				if(debug){
+					for (String each:playerList)System.out.println(each);
+				}
+				success = 0;
 			} else { // convert AI to human
-				return 1;
+				// make new Player with NewName
+				// copy info from oldName Player to new Player
+				// delete oldName Player
+				// update hashMap players
+				// update playerList
+				success = 1;
 			}
 		} else if (oldName.indexOf("ai") == 0) { // convert human to AI
-			return 1;
+			// make new AIPlayer with NewName
+			// copy info from oldName Player to new Player
+			// assign risk from newName
+			// delete oldName Player
+			// update hashMap players
+			// update playerList
+			success = 1;
 	    } else {
 			pp.changeName(newName);
 			if(debug)System.out.println(String.format("Rename %s to %s",oldName,newName));
+			// update hashMap players
+			players.remove(oldName);
+			players.put(newName, pp);
 			if(debug)System.out.println(players);
-			return 0;
+			// update playerList
+			ArrayList<String> temp = new ArrayList<String>();
+			for(int in=0;in<index;in++) {
+				temp.add(playerList[in]);
+				if (debug)System.out.println("add "+playerList[in]+" to temp");
+			}
+			temp.add(newName);
+			for(int in=index+1;in<playerList.length;in++) temp.add(playerList[in]);
+			playerList = temp.toArray(playerList);
+			if(debug){
+				for (String each:playerList)System.out.println(each);
+			}
+			success = 0;
 		}
+		return success;
 	}
 
 	public int setGui(FillrBustGui gui) {
