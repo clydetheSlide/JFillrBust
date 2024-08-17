@@ -44,18 +44,32 @@ class Player{
     }
 
 	/** copy one player to another
-	 *
+	 * @param from player to copy from
+	 * @param convert   if true switch from AI to human;
+	 *                  false if not present
 	 */
-	public void copy(Player from){
+	public void copy(Player from, boolean convert){
 		this.score = from.score;
-		this.isai = from.isai;
+		if(convert)
+			this.isai = !from.isai;
+		else
+			this.isai = from.isai;
+	}
+	public void copy(Player from){
+		copy(from,false);
 	}
 
 	/** for testing purposes, set players total score
-	 *
-	 * @param sc
 	 */
 	public void tSetSc(int sc){
 		score = sc;
+	}
+
+	public String toString() {
+		//if (isai) {
+		//	AIPlayer app = (AIPlayer) this;
+		//	return app.toString();
+		//} else
+			return "Player " + this.name+" has "+this.score+" points.";
 	}
 }

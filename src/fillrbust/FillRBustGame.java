@@ -107,6 +107,7 @@ class FillRBustGame {
 	}
 
 	public void removePlayer(String name){
+		// be careful if trying to remove current player or just dont
 		// remove Player from players
 		// remove name from playerList
 	}
@@ -163,32 +164,39 @@ class FillRBustGame {
 				players.remove(oldName);
 				players.put(newName, app);
 				if(debug)System.out.println(players);
-				// update playerList
-				ArrayList<String> temp = new ArrayList<String>();
-				for(int in=0;in<index;in++) temp.add(playerList[in]);
-				temp.add(newName);
-				for(int in=index+1;in<playerList.length;in++) temp.add(playerList[in]);
-				playerList = temp.toArray(playerList);
-				if(debug){
-					for (String each:playerList)System.out.println(each);
-				}
 				success = 0;
-			} else { // convert AI to human
-				// make new Player with NewName
+			} else { // convert human to AI
+				// make new AIPlayer with NewName
+				// assign risk from newName
+				int risk = 3;
+				int end = newName.length();
+				char rc = newName.charAt(end - 1);
+				if ("1234567890".indexOf(rc) >= 0) {
+					risk = Character.getNumericValue(rc);
+					end = end - 1;
+				}
+				AIPlayer npp = new AIPlayer(newName.substring(0, end),risk);
 				// copy info from oldName Player to new Player
-				// delete oldName Player
+				npp.copy(pp,true);
+				if(debug) System.out.println(npp);
 				// update hashMap players
-				// update playerList
-				success = 1;
+				players.put(newName, npp);
+				// delete oldName Player
+				players.remove(oldName);
+				success = 0;
 			}
-		} else if (oldName.indexOf("ai") == 0) { // convert human to AI
-			// make new AIPlayer with NewName
+		} else if (oldName.indexOf("ai") == 0) { // convert AI to human
+			if(debug)System.out.println(String.format("Convert %s to human %s",oldName,newName));
+			// make new Player with NewName
+			Player npp = new Player(newName);
 			// copy info from oldName Player to new Player
-			// assign risk from newName
-			// delete oldName Player
+			npp.copy(pp, true);
+			if(debug) System.out.println(npp);
 			// update hashMap players
-			// update playerList
-			success = 1;
+			players.put(newName, npp);
+			// delete oldName Player
+			players.remove(oldName);
+			success = 0;
 	    } else {
 			pp.changeName(newName);
 			if(debug)System.out.println(String.format("Rename %s to %s",oldName,newName));
@@ -196,6 +204,9 @@ class FillRBustGame {
 			players.remove(oldName);
 			players.put(newName, pp);
 			if(debug)System.out.println(players);
+			success = 0;
+		}
+		if (success == 0) {
 			// update playerList
 			ArrayList<String> temp = new ArrayList<String>();
 			for(int in=0;in<index;in++) {
@@ -203,12 +214,11 @@ class FillRBustGame {
 				if (debug)System.out.println("add "+playerList[in]+" to temp");
 			}
 			temp.add(newName);
-			for(int in=index+1;in<playerList.length;in++) temp.add(playerList[in]);
+			for (int in=index+1; in<playerList.length; in++) temp.add(playerList[in]);
 			playerList = temp.toArray(playerList);
-			if(debug){
-				for (String each:playerList)System.out.println(each);
+			if (debug) {
+				for (String each : playerList) System.out.println(each);
 			}
-			success = 0;
 		}
 		return success;
 	}
@@ -225,22 +235,30 @@ class FillRBustGame {
 		return state;
 	}
 
+	/** Draw a new card and report its type */
 	public Cards.Name getCard() {
 		return deck.draw();
 	}
 
+	/** Roll all the dice */
 	public void newDice() {
 		dice = new Dice();
 	}
 
+	/** report the recent dice that were rolled */
 	public String getRolled() {
 		return dice.getRolled();
 	}
 
+	/** change which dice are selected */
 	public void selectDice(String mask) {
 		dice.selected(mask);
 	}
 
+	/** report which dice are reserved to score
+	 * rather than to be rolled
+	 * @return String of dice values
+	 */
 	public String getReserved() {
 		return dice.getUsed();
 	}
@@ -944,6 +962,9 @@ class FillRBustGame {
 		}
 	}
 
+	/** compare Player's score to the current high score
+	 * and update if appropriate.
+	 */
 	private boolean checkUpdateHigh(Player player) {
 		int newScore = player.getScore();
 		gui.updateScore(newScore);
@@ -973,14 +994,14 @@ class FillRBustGame {
 	 * using the assigned risk of the player
 	 * @return response
 	 */
-	public String aiResponse(){
-	    AIPlayer p = (AIPlayer) this.player;
-	    return aiResponse(p,1200);
-	}
-	private static final int RISK_RANGE = 16;
 	public String aiResponse(Player p){
 	    return aiResponse(p,1200);
 	}
+	public String aiResponse(){
+		AIPlayer p = (AIPlayer) this.player;
+		return aiResponse(p,1200);
+	}
+	private static final int RISK_RANGE = 16;
 	public String aiResponse(Player p, int delay){
 		AIPlayer player = (AIPlayer) p;
 		try {
@@ -997,7 +1018,7 @@ class FillRBustGame {
 		if(debug) System.out.println("rand+player_risk = "+prob);
 		// higher prob -> higher conservativeness
 		if (state == STATES.ROLLED){
-			if (mustbust || mustfill ||vengeance || doubletrouble>0) return "a";  // until I develop smarts to select dice just roll what's there
+			if (mustbust || mustfill ||vengeance || doubletrouble>0) return "a";  // TODO: until I develop smarts to select dice just roll what's there
 			int pDiff = probOffset();
 			if(debug)System.out.println("state offset ="+pDiff);
 			int rDiff = (int)(RISK_RANGE*(1.-rollRisk(6-dice.getReserved().length())));

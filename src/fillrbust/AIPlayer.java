@@ -137,4 +137,7 @@ class AIPlayer extends Player {
 	return (double)max;
     }
 
+	public String toString() {
+		return "AIPlayer "+this.getName()+" accepts risk level "+risker+" and has "+this.score+" points.";
+	}
 }
