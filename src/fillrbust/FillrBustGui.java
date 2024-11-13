@@ -40,7 +40,7 @@ class FillrBustGui extends JFrame{
 "                           make the player computer controlled.\n"+
 "      \033[32m-m\033[0m winningScore	    the score at which someone is delared the winner\n"+
 "      \033[32m-F\033[0m fontSize	    size of the font for the instruction box\n"+
-"      \033[32m-d\033[0m diceDir	    directory for dice images: Medium, Big, Orig\n"+
+"      \033[32m-d\033[0m diceDir	    directory for dice images: Small,Medium, Big, Orig\n"+
 "      \033[32m-c\033[0m cardDir	    directory for card images: Orig, Big, Huge, GG\n"+
 "      \033[32m-V\033[0m vertical orientation of diceGUI (default is horizontal)\n"+
 "      \033[32m-C\033[0m configFile	    path to configuration file\n"+
